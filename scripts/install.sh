@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-REPO="ingorewho/video-driven-skill"
+REPO="thought2code/video-driven-skill"
 REF="${VD_SKILL_REF:-main}"
 INSTALL_DIR="${VD_SKILL_INSTALL_DIR:-$HOME/video-driven-skill}"
 IMAGE_TAG="${VD_SKILL_IMAGE_TAG:-latest}"

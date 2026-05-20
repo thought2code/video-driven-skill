@@ -11,7 +11,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$Repo = "ingorewho/video-driven-skill"
+$Repo = "thought2code/video-driven-skill"
 $RawBase = "https://raw.githubusercontent.com/$Repo/$Ref"
 
 if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {

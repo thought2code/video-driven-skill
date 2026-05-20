@@ -7,7 +7,7 @@ name: video-driven-skill
 
 services:
   backend:
-    image: ghcr.io/ingorewho/video-driven-skill-backend:${VD_SKILL_IMAGE_TAG:-latest}
+    image: ghcr.io/thought2code/video-driven-skill-backend:${VD_SKILL_IMAGE_TAG:-latest}
     environment:
       VIDEO_DRIVEN_SKILL_HOME: /data
       AI_API_KEY: ${AI_API_KEY:-}
@@ -27,7 +27,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: ghcr.io/ingorewho/video-driven-skill-frontend:${VD_SKILL_IMAGE_TAG:-latest}
+    image: ghcr.io/thought2code/video-driven-skill-frontend:${VD_SKILL_IMAGE_TAG:-latest}
     ports:
       - "${FRONTEND_PORT:-3000}:80"
     depends_on:

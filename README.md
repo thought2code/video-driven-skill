@@ -84,13 +84,13 @@ Pick the path that matches your goal:
 macOS / Linux:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ingorewho/video-driven-skill/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/thought2code/video-driven-skill/main/scripts/install.sh | bash
 ```
 
 Windows (PowerShell):
 
 ```powershell
-irm https://raw.githubusercontent.com/ingorewho/video-driven-skill/main/scripts/install.ps1 | iex
+irm https://raw.githubusercontent.com/thought2code/video-driven-skill/main/scripts/install.ps1 | iex
 ```
 
 If you already cloned the repo, run `./scripts/install.sh` or `.\scripts\install.ps1` from the project instead.
@@ -109,7 +109,7 @@ AI_API_KEY=your-key-here
 
 | Tag                | When to use                                                                          |
 |--------------------|--------------------------------------------------------------------------------------|
-| `latest` (default) | Track the newest [release](https://github.com/ingorewho/video-driven-skill/releases) |
+| `latest` (default) | Track the newest [release](https://github.com/thought2code/video-driven-skill/releases) |
 | `v1.0.0` (example) | Pin a specific release in production                                                 |
 
 ```bash
@@ -120,7 +120,7 @@ Or set `VD_SKILL_IMAGE_TAG=v1.0.0` when running `docker compose -f docker-compos
 
 **How images are published**
 
-- Registry: `ghcr.io/ingorewho/video-driven-skill-backend` and `ghcr.io/ingorewho/video-driven-skill-frontend`
+- Registry: `ghcr.io/thought2code/video-driven-skill-backend` and `ghcr.io/thought2code/video-driven-skill-frontend`
 - **A new image is built only when a version Git tag is pushed** (e.g. `v1.0.0`, `v1.2.3`). Pushes to `main` alone do **not** publish images.
 - Tag `latest` on GHCR always points to the **most recent** `v*` release.
 
@@ -140,8 +140,8 @@ Or set `VD_SKILL_IMAGE_TAG=v1.0.0` when running `docker compose -f docker-compos
 
 ```bash
 mkdir -p ~/video-driven-skill && cd ~/video-driven-skill
-curl -fsSL https://raw.githubusercontent.com/ingorewho/video-driven-skill/main/docker-compose.release.yml -o docker-compose.release.yml
-curl -fsSL https://raw.githubusercontent.com/ingorewho/video-driven-skill/main/.env.example -o .env
+curl -fsSL https://raw.githubusercontent.com/thought2code/video-driven-skill/main/docker-compose.release.yml -o docker-compose.release.yml
+curl -fsSL https://raw.githubusercontent.com/thought2code/video-driven-skill/main/.env.example -o .env
 # Edit .env — set AI_API_KEY
 docker compose -f docker-compose.release.yml pull
 docker compose -f docker-compose.release.yml up -d
@@ -156,7 +156,7 @@ docker compose -f docker-compose.release.yml up -d
 **What this does:** Clones the repo and **builds** images locally with `docker-compose.yml`. Use this when you are developing, need unreleased `main`, or want the China mirror overlay for faster base-image pulls.
 
 ```bash
-git clone https://github.com/ingorewho/video-driven-skill.git
+git clone https://github.com/thought2code/video-driven-skill.git
 cd video-driven-skill
 ```
 

@@ -84,13 +84,13 @@ Video Driven Skill 是一套开源的**自动化工作室**：把**屏幕录屏*
 macOS / Linux：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ingorewho/video-driven-skill/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/thought2code/video-driven-skill/main/scripts/install.sh | bash
 ```
 
 Windows（PowerShell）：
 
 ```powershell
-irm https://raw.githubusercontent.com/ingorewho/video-driven-skill/main/scripts/install.ps1 | iex
+irm https://raw.githubusercontent.com/thought2code/video-driven-skill/main/scripts/install.ps1 | iex
 ```
 
 若已克隆仓库，可在项目根目录执行 `./scripts/install.sh` 或 `.\scripts\install.ps1`。
@@ -109,7 +109,7 @@ AI_API_KEY=你的密钥
 
 | 镜像标签 | 适用场景 |
 |----------|----------|
-| `latest`（默认） | 始终使用最新 [Release](https://github.com/ingorewho/video-driven-skill/releases) |
+| `latest`（默认） | 始终使用最新 [Release](https://github.com/thought2code/video-driven-skill/releases) |
 | `v1.0.0`（示例） | 生产环境固定某一发行版 |
 
 ```bash
@@ -120,7 +120,7 @@ AI_API_KEY=你的密钥
 
 **镜像如何发布**
 
-- 镜像地址：`ghcr.io/ingorewho/video-driven-skill-backend`、`ghcr.io/ingorewho/video-driven-skill-frontend`
+- 镜像地址：`ghcr.io/thought2code/video-driven-skill-backend`、`ghcr.io/thought2code/video-driven-skill-frontend`
 - **仅在推送版本 Git 标签时构建**（如 `v1.0.0`、`v1.2.3`）。仅推送到 `main` **不会**产生新镜像。
 - GHCR 上的 `latest` 标签始终指向**最近一次** `v*` 发行版。
 
@@ -140,8 +140,8 @@ AI_API_KEY=你的密钥
 
 ```bash
 mkdir -p ~/video-driven-skill && cd ~/video-driven-skill
-curl -fsSL https://raw.githubusercontent.com/ingorewho/video-driven-skill/main/docker-compose.release.yml -o docker-compose.release.yml
-curl -fsSL https://raw.githubusercontent.com/ingorewho/video-driven-skill/main/.env.example -o .env
+curl -fsSL https://raw.githubusercontent.com/thought2code/video-driven-skill/main/docker-compose.release.yml -o docker-compose.release.yml
+curl -fsSL https://raw.githubusercontent.com/thought2code/video-driven-skill/main/.env.example -o .env
 # 编辑 .env — 填写 AI_API_KEY
 docker compose -f docker-compose.release.yml pull
 docker compose -f docker-compose.release.yml up -d
@@ -156,7 +156,7 @@ docker compose -f docker-compose.release.yml up -d
 **做什么：** 克隆仓库后使用 `docker-compose.yml` **本地构建**镜像。适合开发调试、需要未发版的 `main`，或使用国内镜像加速**本地构建**（与上方 GHCR 安装无关）。
 
 ```bash
-git clone https://github.com/ingorewho/video-driven-skill.git
+git clone https://github.com/thought2code/video-driven-skill.git
 cd video-driven-skill
 ```
 
