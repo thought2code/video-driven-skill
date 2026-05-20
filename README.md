@@ -57,14 +57,108 @@ The project is designed for teams and individuals who want automation to start f
 
 ### Docker (recommended)
 
-Install [Docker](https://docs.docker.com/get-docker/), then clone the repository:
+First, install [Docker](https://docs.docker.com/get-docker/).
+
+Pick the path that matches your goal:
+
+| I want to…                                                       | You need           | Steps                                              |
+|------------------------------------------------------------------|--------------------|----------------------------------------------------|
+| **Run the app quickly** — no Git, no local build                 | Docker only        | [Pre-built images](#pre-built-images-end-users)    |
+| **Hack on the code** — latest `main`, or China mirror for builds | Docker + Git clone | [Build from source](#build-from-source-developers) |
+
+---
+
+#### Pre-built images (end users)
+
+**What this does:** Downloads `docker-compose.release.yml` and `.env` into a fixed folder, pulls **ready-made** images from GitHub Container Registry (GHCR), and starts the stack. You do **not** clone this repository.
+
+**Install location**
+
+| OS            | Default directory                  |
+|---------------|------------------------------------|
+| macOS / Linux | `~/video-driven-skill`             |
+| Windows       | `%USERPROFILE%\video-driven-skill` |
+
+**1. Install and start**
+
+macOS / Linux:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ingorewho/video-driven-skill/main/scripts/install.sh | bash
+```
+
+Windows (PowerShell):
+
+```powershell
+irm https://raw.githubusercontent.com/ingorewho/video-driven-skill/main/scripts/install.ps1 | iex
+```
+
+If you already cloned the repo, run `./scripts/install.sh` or `.\scripts\install.ps1` from the project instead.
+
+The script pulls images, starts containers, and opens `http://localhost:3000` when the UI is ready.
+
+**2. Configure AI (required for generation features)**
+
+On first run, `.env` is created from `.env.example`. Edit it and set:
+
+```env
+AI_API_KEY=your-key-here
+```
+
+**3. Choose a version (optional)**
+
+| Tag                | When to use                                                                          |
+|--------------------|--------------------------------------------------------------------------------------|
+| `latest` (default) | Track the newest [release](https://github.com/ingorewho/video-driven-skill/releases) |
+| `v1.0.0` (example) | Pin a specific release in production                                                 |
+
+```bash
+./scripts/install.sh --tag v1.0.0
+```
+
+Or set `VD_SKILL_IMAGE_TAG=v1.0.0` when running `docker compose -f docker-compose.release.yml …`.
+
+**How images are published**
+
+- Registry: `ghcr.io/ingorewho/video-driven-skill-backend` and `ghcr.io/ingorewho/video-driven-skill-frontend`
+- **A new image is built only when a version Git tag is pushed** (e.g. `v1.0.0`, `v1.2.3`). Pushes to `main` alone do **not** publish images.
+- Tag `latest` on GHCR always points to the **most recent** `v*` release.
+
+> **First release not out yet?** GHCR will have no images until the project tags its first release (e.g. `v1.0.0`). Until then, use [build from source](#build-from-source-developers) below.
+
+**Install script options**
+
+| Option      | Description                                       | Default                |
+|-------------|---------------------------------------------------|------------------------|
+| `--dir`     | Install directory                                 | `~/video-driven-skill` |
+| `--tag`     | Image tag on GHCR (`latest` or `v1.0.0`, …)       | `latest`               |
+| `--port`    | Web UI port                                       | `3000`                 |
+| `--ref`     | Git ref used to download compose / `.env.example` | `main`                 |
+| `--no-open` | Do not open the browser when ready                | off                    |
+
+**Manual install (no install script)**
+
+```bash
+mkdir -p ~/video-driven-skill && cd ~/video-driven-skill
+curl -fsSL https://raw.githubusercontent.com/ingorewho/video-driven-skill/main/docker-compose.release.yml -o docker-compose.release.yml
+curl -fsSL https://raw.githubusercontent.com/ingorewho/video-driven-skill/main/.env.example -o .env
+# Edit .env — set AI_API_KEY
+docker compose -f docker-compose.release.yml pull
+docker compose -f docker-compose.release.yml up -d
+```
+
+**Update to a newer release:** run the install script again, or `docker compose -f docker-compose.release.yml pull && docker compose -f docker-compose.release.yml up -d` with the desired `VD_SKILL_IMAGE_TAG`.
+
+---
+
+#### Build from source (developers)
+
+**What this does:** Clones the repo and **builds** images locally with `docker-compose.yml`. Use this when you are developing, need unreleased `main`, or want the China mirror overlay for faster base-image pulls.
 
 ```bash
 git clone https://github.com/ingorewho/video-driven-skill.git
 cd video-driven-skill
 ```
-
-Run from the project root:
 
 **Windows**
 
@@ -79,9 +173,9 @@ chmod +x scripts/run-in-docker.sh
 ./scripts/run-in-docker.sh
 ```
 
-**Edit `.env` and set `AI_API_KEY` on first run.**
+On first run, `.env` is created from `.env.example` — set `AI_API_KEY` before using AI features.
 
-**If you are in China, recommend using the fast mirror:**
+**China — faster local builds** (base images only; does not apply to the GHCR install path above):
 
 ```bat
 .\scripts\run-in-docker.cmd --cn
@@ -91,17 +185,7 @@ chmod +x scripts/run-in-docker.sh
 ./scripts/run-in-docker.sh --cn
 ```
 
-Custom port: set `FRONTEND_PORT=3000` in `.env`.
-
-Start without opening a browser:
-
-```bat
-.\scripts\run-in-docker.cmd --no-open
-```
-
-```bash
-./scripts/run-in-docker.sh --no-open
-```
+**Options:** `FRONTEND_PORT=3000` in `.env` to change the UI port; pass `--no-open` to skip opening the browser.
 
 ---
 
@@ -125,14 +209,15 @@ Start without opening a browser:
 video-driven-skill/
 ├── backend/                 # Spring Boot — API, video processing, AI, skill runner
 ├── frontend/                # React + Vite — studio UI
-├── docker-compose.yml       # One-command Docker deployment
-├── docker-compose.cn.yml    # Optional mirror overlay (slow Docker Hub)
-├── ARCHITECTURE.md          # Architecture (English)
-├── ARCHITECTURE.zh-CN.md    # Architecture (Chinese)
+├── docker-compose.yml           # Docker deployment (build from source)
+├── docker-compose.release.yml   # GHCR images (no clone)
+├── docker-compose.cn.yml        # Optional mirror overlay (local build)
+├── ARCHITECTURE.md              # Architecture (English)
+├── ARCHITECTURE.zh-CN.md        # Architecture (Chinese)
 ├── scripts/
-│   ├── run-in-docker.cmd        # Docker start + open browser (Windows)
-│   ├── run-in-docker.sh         # Docker start + open browser (Unix)
-│   └── kill-midscene.sh     # Optional cleanup helper
+│   ├── install.sh / install.ps1     # Install from GHCR (no clone)
+│   ├── run-in-docker.cmd / .sh      # Build & run from source
+│   └── kill-midscene.sh         # Optional cleanup helper
 ```
 
 ### Backend (Spring Boot / Java 17)
