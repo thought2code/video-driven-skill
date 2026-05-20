@@ -64,22 +64,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      # GHCR packages are private by default; anonymous `docker pull` needs public visibility.
-      - name: Make package public on GHCR
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PACKAGE_NAME: ${{ matrix.image }}
-          OWNER: ${{ github.repository_owner }}
-        run: |
-          set -euo pipefail
-          if gh api "/orgs/${OWNER}" --silent >/dev/null 2>&1; then
-            gh api --method POST \
-              "/orgs/${OWNER}/packages/container/${PACKAGE_NAME}/visibility" \
-              -f visibility='public' \
-              -F repeatable=true
-          else
-            gh api --method POST \
-              "/user/packages/container/${PACKAGE_NAME}/visibility" \
-              -f visibility='public'
-          fi

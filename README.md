@@ -123,13 +123,20 @@ Or set `VD_SKILL_IMAGE_TAG=v1.0.0` when running `docker compose -f docker-compos
 - Registry: `ghcr.io/thought2code/video-driven-skill-backend` and `ghcr.io/thought2code/video-driven-skill-frontend`
 - **A new image is built only when a version Git tag is pushed** (e.g. `v1.0.0`, `v1.2.3`). Pushes to `main` alone do **not** publish images.
 - Tag `latest` on GHCR always points to the **most recent** `v*` release.
-- Images must be **public** on GHCR for install without `docker login`. The publish workflow sets visibility after each release; if `docker pull` fails with `unauthorized`, open [thought2code packages](https://github.com/thought2code?tab=packages), choose each `video-driven-skill-*` package → **Package settings** → **Change visibility** → **Public**.
+- Images must be **public** on GHCR for install without `docker login`. After the first publish, a maintainer must set each package to **Public** once (see [GHCR visibility](#ghcr-visibility-one-time-maintainer-step)).
 
 > **First release not out yet?** GHCR will have no images until the project tags its first release (e.g. `v1.0.0`). Until then, use [build from source](#build-from-source-developers) below.
 
+#### GHCR visibility (one-time maintainer step)
+
+New images on GHCR are **private** by default. End-user install (`docker pull` without login) requires **Public** visibility on both packages:
+
+1. Open [Packages for thought2code](https://github.com/thought2code?tab=packages).
+2. For **`video-driven-skill-backend`** and **`video-driven-skill-frontend`**: open the package → **Package settings** → **Change visibility** → **Public** → confirm.
+
 **`docker pull` returns `unauthorized`**
 
-GHCR images are private until visibility is set to **Public**. Maintainers: make both `video-driven-skill-backend` and `video-driven-skill-frontend` public (see link above), or re-run the [Publish Docker images to GHCR](https://github.com/thought2code/video-driven-skill/actions/workflows/docker-publish.yml) workflow on a `v*` tag. Until then, use [build from source](#build-from-source-developers).
+The registry rejected an anonymous pull because the image is still private. Complete the steps above, then run the install script again. Until then, use [build from source](#build-from-source-developers).
 
 **Install script options**
 
