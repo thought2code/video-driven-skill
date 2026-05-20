@@ -123,8 +123,13 @@ AI_API_KEY=你的密钥
 - 镜像地址：`ghcr.io/thought2code/video-driven-skill-backend`、`ghcr.io/thought2code/video-driven-skill-frontend`
 - **仅在推送版本 Git 标签时构建**（如 `v1.0.0`、`v1.2.3`）。仅推送到 `main` **不会**产生新镜像。
 - GHCR 上的 `latest` 标签始终指向**最近一次** `v*` 发行版。
+- 免登录安装要求镜像在 GHCR 上为 **Public**。发布 workflow 会在每次发版后尝试设置可见性；若 `docker pull` 报 `unauthorized`，请打开 [thought2code 的 Packages](https://github.com/thought2code?tab=packages)，分别进入 `video-driven-skill-backend` / `video-driven-skill-frontend` → **Package settings** → **Change visibility** → **Public**。
 
 > **还没有任何 Release？** 在仓库打出第一个版本标签（如 `v1.0.0`）之前，GHCR 上没有可用镜像。请暂时使用下文 [从源码构建](#从源码构建开发者)。
+
+**`docker pull` 出现 `unauthorized`**
+
+说明 GHCR 镜像仍为私有。维护者请将上述两个包设为 **Public**，或在 `v*` 标签上重新运行 [Publish Docker images to GHCR](https://github.com/thought2code/video-driven-skill/actions/workflows/docker-publish.yml)。在此之前可改用下文 [从源码构建](#从源码构建开发者)。
 
 **安装脚本参数**
 
