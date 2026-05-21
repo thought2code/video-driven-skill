@@ -84,11 +84,11 @@ irm https://raw.githubusercontent.com/thought2code/video-driven-skill/main/scrip
 
 ```env
 AI_API_KEY=你的密钥
+AI_BASE_URL=你的接口地址
+AI_MODEL=你的模型名
 ```
 
 常用安装参数：`--tag v1.0.0`、`--port 3000`、`--dir <路径>`、`--no-open`。
-
-> 如果预构建镜像暂不可用或仍为私有，导致拉取失败，请使用下面的源码构建方式。
 
 ### 方式二：从源码构建
 
@@ -116,6 +116,8 @@ chmod +x scripts/run-in-docker.sh
 
 ```env
 AI_API_KEY=你的密钥
+AI_BASE_URL=你的接口地址
+AI_MODEL=你的模型名
 ```
 
 在中国大陆加速基础镜像拉取，可添加 `--cn`。如不想自动打开浏览器，可添加 `--no-open`。

@@ -84,11 +84,11 @@ To use AI generation, set your API key in the generated `.env` file:
 
 ```env
 AI_API_KEY=your-key-here
+AI_BASE_URL=your-base-url
+AI_MODEL=your-model
 ```
 
 Common install options: `--tag v1.0.0`, `--port 3000`, `--dir <path>`, `--no-open`.
-
-> If image pulling fails because pre-built images are unavailable or private, use the source-build path below.
 
 ### Option 2: Build from source
 
@@ -116,6 +116,8 @@ On first run, `.env` is created from `.env.example`; set `AI_API_KEY` before usi
 
 ```env
 AI_API_KEY=your-key-here
+AI_BASE_URL=your-base-url
+AI_MODEL=your-model
 ```
 
 For faster base-image pulls in China, add `--cn`. To skip opening the browser, add `--no-open`.
