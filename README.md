@@ -55,149 +55,72 @@ The project is designed for teams and individuals who want automation to start f
 
 ## Quick Start
 
-### Docker (recommended)
+Install [Docker](https://docs.docker.com/get-docker/) first, then choose the path that matches your goal.
 
-First, install [Docker](https://docs.docker.com/get-docker/).
+### Option 1: Run pre-built images
 
-Pick the path that matches your goal:
+Use this if you just want to run the app. The install script downloads the release Compose file, creates `.env`, pulls the pre-built images, and starts the stack.
 
-| I want to…                                                       | You need           | Steps                                              |
-|------------------------------------------------------------------|--------------------|----------------------------------------------------|
-| **Run the app quickly** — no Git, no local build                 | Docker only        | [Pre-built images](#pre-built-images-end-users)    |
-| **Hack on the code** — latest `main`, or China mirror for builds | Docker + Git clone | [Build from source](#build-from-source-developers) |
-
----
-
-#### Pre-built images (end users)
-
-**What this does:** Downloads `docker-compose.release.yml` and `.env` into a fixed folder, pulls **ready-made** images from GitHub Container Registry (GHCR), and starts the stack. You do **not** clone this repository.
-
-**Install location**
-
-| OS            | Default directory                  |
-|---------------|------------------------------------|
-| macOS / Linux | `~/video-driven-skill`             |
-| Windows       | `%USERPROFILE%\video-driven-skill` |
-
-**1. Install and start**
-
-macOS / Linux:
+#### macOS / Linux
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/thought2code/video-driven-skill/main/scripts/install.sh | bash
 ```
 
-Windows (PowerShell):
+#### Windows
 
 ```powershell
 irm https://raw.githubusercontent.com/thought2code/video-driven-skill/main/scripts/install.ps1 | iex
 ```
 
-If you already cloned the repo, run `./scripts/install.sh` or `.\scripts\install.ps1` from the project instead.
+Default install location:
 
-The script pulls images, starts containers, and opens `http://localhost:3000` when the UI is ready.
+- macOS / Linux: `~/video-driven-skill`
+- Windows: `%USERPROFILE%\video-driven-skill`
 
-**2. Configure AI (required for generation features)**
+Open `http://localhost:3000` after the script finishes.
 
-On first run, `.env` is created from `.env.example`. Edit it and set:
+To use AI generation, set your API key in the generated `.env` file:
 
 ```env
 AI_API_KEY=your-key-here
+AI_BASE_URL=your-base-url
+AI_MODEL=your-model
 ```
 
-**3. Choose a version (optional)**
+Common install options: `--tag v1.0.0`, `--port 3000`, `--dir <path>`, `--no-open`.
 
-| Tag                | When to use                                                                          |
-|--------------------|--------------------------------------------------------------------------------------|
-| `latest` (default) | Track the newest [release](https://github.com/thought2code/video-driven-skill/releases) |
-| `v1.0.0` (example) | Pin a specific release in production                                                 |
+### Option 2: Build from source
 
-```bash
-./scripts/install.sh --tag v1.0.0
-```
-
-Or set `VD_SKILL_IMAGE_TAG=v1.0.0` when running `docker compose -f docker-compose.release.yml …`.
-
-**How images are published**
-
-- Registry: `ghcr.io/thought2code/video-driven-skill-backend` and `ghcr.io/thought2code/video-driven-skill-frontend`
-- **A new image is built only when a version Git tag is pushed** (e.g. `v1.0.0`, `v1.2.3`). Pushes to `main` alone do **not** publish images.
-- Tag `latest` on GHCR always points to the **most recent** `v*` release.
-- Images must be **public** on GHCR for install without `docker login`. After the first publish, a maintainer must set each package to **Public** once (see [GHCR visibility](#ghcr-visibility-one-time-maintainer-step)).
-
-> **First release not out yet?** GHCR will have no images until the project tags its first release (e.g. `v1.0.0`). Until then, use [build from source](#build-from-source-developers) below.
-
-#### GHCR visibility (one-time maintainer step)
-
-New images on GHCR are **private** by default. End-user install (`docker pull` without login) requires **Public** visibility on both packages:
-
-1. Open [Packages for thought2code](https://github.com/thought2code?tab=packages).
-2. For **`video-driven-skill-backend`** and **`video-driven-skill-frontend`**: open the package → **Package settings** → **Change visibility** → **Public** → confirm.
-
-**`docker pull` returns `unauthorized`**
-
-The registry rejected an anonymous pull because the image is still private. Complete the steps above, then run the install script again. Until then, use [build from source](#build-from-source-developers).
-
-**Install script options**
-
-| Option      | Description                                       | Default                |
-|-------------|---------------------------------------------------|------------------------|
-| `--dir`     | Install directory                                 | `~/video-driven-skill` |
-| `--tag`     | Image tag on GHCR (`latest` or `v1.0.0`, …)       | `latest`               |
-| `--port`    | Web UI port                                       | `3000`                 |
-| `--ref`     | Git ref used to download compose / `.env.example` | `main`                 |
-| `--no-open` | Do not open the browser when ready                | off                    |
-
-**Manual install (no install script)**
-
-```bash
-mkdir -p ~/video-driven-skill && cd ~/video-driven-skill
-curl -fsSL https://raw.githubusercontent.com/thought2code/video-driven-skill/main/docker-compose.release.yml -o docker-compose.release.yml
-curl -fsSL https://raw.githubusercontent.com/thought2code/video-driven-skill/main/.env.example -o .env
-# Edit .env — set AI_API_KEY
-docker compose -f docker-compose.release.yml pull
-docker compose -f docker-compose.release.yml up -d
-```
-
-**Update to a newer release:** run the install script again, or `docker compose -f docker-compose.release.yml pull && docker compose -f docker-compose.release.yml up -d` with the desired `VD_SKILL_IMAGE_TAG`.
-
----
-
-#### Build from source (developers)
-
-**What this does:** Clones the repo and **builds** images locally with `docker-compose.yml`. Use this when you are developing, need unreleased `main`, or want the China mirror overlay for faster base-image pulls.
+Use this for development, unreleased `main`, or local builds. It requires Docker and Git.
 
 ```bash
 git clone https://github.com/thought2code/video-driven-skill.git
 cd video-driven-skill
 ```
 
-**Windows**
-
-```bat
-.\scripts\run-in-docker.cmd
-```
-
-**macOS / Linux** (make executable once)
+#### macOS / Linux
 
 ```bash
 chmod +x scripts/run-in-docker.sh
 ./scripts/run-in-docker.sh
 ```
 
-On first run, `.env` is created from `.env.example` — set `AI_API_KEY` before using AI features.
-
-**China — faster local builds** (base images only; does not apply to the GHCR install path above):
+#### Windows
 
 ```bat
-.\scripts\run-in-docker.cmd --cn
+.\scripts\run-in-docker.cmd
 ```
 
-```bash
-./scripts/run-in-docker.sh --cn
+On first run, `.env` is created from `.env.example`; set `AI_API_KEY` before using AI features:
+
+```env
+AI_API_KEY=your-key-here
+AI_BASE_URL=your-base-url
+AI_MODEL=your-model
 ```
 
-**Options:** `FRONTEND_PORT=3000` in `.env` to change the UI port; pass `--no-open` to skip opening the browser.
+For faster base-image pulls in China, add `--cn`. To skip opening the browser, add `--no-open`.
 
 ---
 
