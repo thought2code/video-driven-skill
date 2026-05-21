@@ -55,149 +55,37 @@ Video Driven Skill 是一套开源的**自动化工作室**：把**屏幕录屏*
 
 ## 快速开始
 
-### Docker（推荐）
+### Step 1：安装 Docker
 
-首先，安装 [Docker](https://docs.docker.com/get-docker/)。
+先安装 [Docker](https://docs.docker.com/get-docker/)。
 
-根据你的目标选择安装方式：
+### Step 2：启动 Video Driven Skill
 
-| 我的需求 | 需要准备 | 对应章节 |
-|----------|----------|----------|
-| **尽快跑起来** — 不克隆仓库、不本地编译 | 仅需 Docker | [预构建镜像](#预构建镜像普通用户) |
-| **改代码或跟 main** — 需要最新未发版代码，或国内加速本地构建 | Docker + Git 克隆 | [从源码构建](#从源码构建开发者) |
+安装脚本会下载发布版 Compose 文件、拉取预构建镜像并启动应用。
 
----
-
-#### 预构建镜像（普通用户）
-
-**做什么：** 在固定目录下载 `docker-compose.release.yml` 与 `.env`，从 GitHub Container Registry（GHCR）拉取**已构建好的**镜像并启动。**无需**克隆本仓库。
-
-**安装目录**
-
-| 系统 | 默认路径 |
-|------|----------|
-| macOS / Linux | `~/video-driven-skill` |
-| Windows | `%USERPROFILE%\video-driven-skill` |
-
-**1. 安装并启动**
-
-macOS / Linux：
+#### macOS / Linux
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/thought2code/video-driven-skill/main/scripts/install.sh | bash
 ```
 
-Windows（PowerShell）：
+#### Windows
 
 ```powershell
 irm https://raw.githubusercontent.com/thought2code/video-driven-skill/main/scripts/install.ps1 | iex
 ```
 
-若已克隆仓库，可在项目根目录执行 `./scripts/install.sh` 或 `.\scripts\install.ps1`。
+### Step 3：配置 AI
 
-脚本会拉取镜像、启动容器，并在 UI 就绪后打开 `http://localhost:3000`。
-
-**2. 配置 AI（使用生成功能前必填）**
-
-首次运行会从 `.env.example` 生成 `.env`，编辑并填写：
+首次运行后，脚本会在安装目录生成 `.env`。使用 AI 生成功能前，请填写：
 
 ```env
 AI_API_KEY=你的密钥
 ```
 
-**3. 选择版本（可选）**
+### Step 4：打开应用
 
-| 镜像标签 | 适用场景 |
-|----------|----------|
-| `latest`（默认） | 始终使用最新 [Release](https://github.com/thought2code/video-driven-skill/releases) |
-| `v1.0.0`（示例） | 生产环境固定某一发行版 |
-
-```bash
-./scripts/install.sh --tag v1.0.0
-```
-
-或在执行 `docker compose -f docker-compose.release.yml …` 时设置 `VD_SKILL_IMAGE_TAG=v1.0.0`。
-
-**镜像如何发布**
-
-- 镜像地址：`ghcr.io/thought2code/video-driven-skill-backend`、`ghcr.io/thought2code/video-driven-skill-frontend`
-- **仅在推送版本 Git 标签时构建**（如 `v1.0.0`、`v1.2.3`）。仅推送到 `main` **不会**产生新镜像。
-- GHCR 上的 `latest` 标签始终指向**最近一次** `v*` 发行版。
-- 免登录安装要求镜像在 GHCR 上为 **Public**。首次发布后需维护者一次性将两个包设为公开（见 [GHCR 可见性](#ghcr-可见性维护者一次性设置)）。
-
-> **还没有任何 Release？** 在仓库打出第一个版本标签（如 `v1.0.0`）之前，GHCR 上没有可用镜像。请暂时使用下文 [从源码构建](#从源码构建开发者)。
-
-#### GHCR 可见性（维护者一次性设置）
-
-推送到 GHCR 的镜像默认为 **私有**。终端用户在不 `docker login` 的情况下安装，需要把两个包都设为 **Public**：
-
-1. 打开 [thought2code 的 Packages](https://github.com/thought2code?tab=packages)。
-2. 分别进入 **`video-driven-skill-backend`**、**`video-driven-skill-frontend`** → **Package settings** → **Change visibility** → **Public** → 确认。
-
-**`docker pull` 出现 `unauthorized`**
-
-说明镜像仍为私有。完成上述设置后重新执行安装脚本；在此之前可改用下文 [从源码构建](#从源码构建开发者)。
-
-**安装脚本参数**
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| `--dir` | 安装目录 | `~/video-driven-skill` |
-| `--tag` | GHCR 镜像标签（`latest` 或 `v1.0.0` 等） | `latest` |
-| `--port` | Web UI 端口 | `3000` |
-| `--ref` | 下载 compose / `.env.example` 时使用的 Git 引用 | `main` |
-| `--no-open` | 就绪后不自动打开浏览器 | 关闭 |
-
-**手动安装（不用安装脚本）**
-
-```bash
-mkdir -p ~/video-driven-skill && cd ~/video-driven-skill
-curl -fsSL https://raw.githubusercontent.com/thought2code/video-driven-skill/main/docker-compose.release.yml -o docker-compose.release.yml
-curl -fsSL https://raw.githubusercontent.com/thought2code/video-driven-skill/main/.env.example -o .env
-# 编辑 .env — 填写 AI_API_KEY
-docker compose -f docker-compose.release.yml pull
-docker compose -f docker-compose.release.yml up -d
-```
-
-**升级到新版：** 再次运行安装脚本，或执行 `docker compose -f docker-compose.release.yml pull && docker compose -f docker-compose.release.yml up -d`，并指定目标 `VD_SKILL_IMAGE_TAG`。
-
----
-
-#### 从源码构建（开发者）
-
-**做什么：** 克隆仓库后使用 `docker-compose.yml` **本地构建**镜像。适合开发调试、需要未发版的 `main`，或使用国内镜像加速**本地构建**（与上方 GHCR 安装无关）。
-
-```bash
-git clone https://github.com/thought2code/video-driven-skill.git
-cd video-driven-skill
-```
-
-**Windows**
-
-```bat
-.\scripts\run-in-docker.cmd
-```
-
-**macOS / Linux**（首次先赋予执行权限）
-
-```bash
-chmod +x scripts/run-in-docker.sh
-./scripts/run-in-docker.sh
-```
-
-首次运行会从 `.env.example` 生成 `.env` — 使用 AI 功能前请设置 `AI_API_KEY`。
-
-**中国大陆 — 加速本地构建**（仅影响基础镜像拉取，不适用于上方 GHCR 预构建安装）：
-
-```bat
-.\scripts\run-in-docker.cmd --cn
-```
-
-```bash
-./scripts/run-in-docker.sh --cn
-```
-
-**其他：** 在 `.env` 中设置 `FRONTEND_PORT=3000` 可改 UI 端口；加 `--no-open` 则不自动打开浏览器。
+访问 `http://localhost:3000`。
 
 ---
 
