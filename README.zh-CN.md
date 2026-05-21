@@ -55,13 +55,11 @@ Video Driven Skill 是一套开源的**自动化工作室**：把**屏幕录屏*
 
 ## 快速开始
 
-### Step 1：安装 Docker
+先安装 [Docker](https://docs.docker.com/get-docker/)，然后根据目标选择启动方式。
 
-先安装 [Docker](https://docs.docker.com/get-docker/)。
+### 方式一：使用预构建镜像
 
-### Step 2：启动 Video Driven Skill
-
-安装脚本会下载发布版 Compose 文件、拉取预构建镜像并启动应用。
+适合只想快速运行应用的用户。安装脚本会下载发布版 Compose 文件、创建 `.env`、拉取预构建镜像并启动服务。
 
 #### macOS / Linux
 
@@ -75,17 +73,52 @@ curl -fsSL https://raw.githubusercontent.com/thought2code/video-driven-skill/mai
 irm https://raw.githubusercontent.com/thought2code/video-driven-skill/main/scripts/install.ps1 | iex
 ```
 
-### Step 3：配置 AI
+默认安装目录：
 
-首次运行后，脚本会在安装目录生成 `.env`。使用 AI 生成功能前，请填写：
+- macOS / Linux：`~/video-driven-skill`
+- Windows：`%USERPROFILE%\video-driven-skill`
+
+脚本执行完成后访问 `http://localhost:3000`。
+
+使用 AI 生成功能前，请在生成的 `.env` 中填写：
 
 ```env
 AI_API_KEY=你的密钥
 ```
 
-### Step 4：打开应用
+常用安装参数：`--tag v1.0.0`、`--port 3000`、`--dir <路径>`、`--no-open`。
 
-访问 `http://localhost:3000`。
+> 如果预构建镜像暂不可用或仍为私有，导致拉取失败，请使用下面的源码构建方式。
+
+### 方式二：从源码构建
+
+适合开发调试、使用未发布的 `main`，或需要本地构建的场景。需要 Docker 和 Git。
+
+```bash
+git clone https://github.com/thought2code/video-driven-skill.git
+cd video-driven-skill
+```
+
+#### macOS / Linux
+
+```bash
+chmod +x scripts/run-in-docker.sh
+./scripts/run-in-docker.sh
+```
+
+#### Windows
+
+```bat
+.\scripts\run-in-docker.cmd
+```
+
+首次运行会从 `.env.example` 生成 `.env`；使用 AI 功能前请设置：
+
+```env
+AI_API_KEY=你的密钥
+```
+
+在中国大陆加速基础镜像拉取，可添加 `--cn`。如不想自动打开浏览器，可添加 `--no-open`。
 
 ---
 

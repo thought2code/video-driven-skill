@@ -55,13 +55,11 @@ The project is designed for teams and individuals who want automation to start f
 
 ## Quick Start
 
-### Step 1: Install Docker
+Install [Docker](https://docs.docker.com/get-docker/) first, then choose the path that matches your goal.
 
-Install [Docker](https://docs.docker.com/get-docker/) first.
+### Option 1: Run pre-built images
 
-### Step 2: Start Video Driven Skill
-
-The install script downloads the release compose file, pulls the pre-built images, and starts the app.
+Use this if you just want to run the app. The install script downloads the release Compose file, creates `.env`, pulls the pre-built images, and starts the stack.
 
 #### macOS / Linux
 
@@ -75,17 +73,52 @@ curl -fsSL https://raw.githubusercontent.com/thought2code/video-driven-skill/mai
 irm https://raw.githubusercontent.com/thought2code/video-driven-skill/main/scripts/install.ps1 | iex
 ```
 
-### Step 3: Configure AI
+Default install location:
 
-On first run, the script creates `.env` in the install directory. Set your API key before using AI generation:
+- macOS / Linux: `~/video-driven-skill`
+- Windows: `%USERPROFILE%\video-driven-skill`
+
+Open `http://localhost:3000` after the script finishes.
+
+To use AI generation, set your API key in the generated `.env` file:
 
 ```env
 AI_API_KEY=your-key-here
 ```
 
-### Step 4: Open the app
+Common install options: `--tag v1.0.0`, `--port 3000`, `--dir <path>`, `--no-open`.
 
-Visit `http://localhost:3000`.
+> If image pulling fails because pre-built images are unavailable or private, use the source-build path below.
+
+### Option 2: Build from source
+
+Use this for development, unreleased `main`, or local builds. It requires Docker and Git.
+
+```bash
+git clone https://github.com/thought2code/video-driven-skill.git
+cd video-driven-skill
+```
+
+#### macOS / Linux
+
+```bash
+chmod +x scripts/run-in-docker.sh
+./scripts/run-in-docker.sh
+```
+
+#### Windows
+
+```bat
+.\scripts\run-in-docker.cmd
+```
+
+On first run, `.env` is created from `.env.example`; set `AI_API_KEY` before using AI features:
+
+```env
+AI_API_KEY=your-key-here
+```
+
+For faster base-image pulls in China, add `--cn`. To skip opening the browser, add `--no-open`.
 
 ---
 
