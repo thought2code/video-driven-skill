@@ -176,17 +176,13 @@ export default function HomePage() {
                 }}
               />
             </h1>
-            <p className='mt-4 text-ink-500 text-[14px] max-w-[480px] leading-relaxed'>
+            <p className='mt-4 text-ink-500 text-[14px] leading-relaxed whitespace-nowrap'>
               {t('home.heroSubtitle')}
             </p>
           </div>
 
           <div className='hidden md:flex flex-col items-end gap-3 pb-1'>
             <LanguageSwitcher />
-            <div className='eyebrow'>Version 1.0</div>
-            <div className='font-mono text-[11px] text-ink-400 tracking-wide'>
-              {new Date().getFullYear()} · Open Source
-            </div>
           </div>
         </header>
 
@@ -455,7 +451,7 @@ export default function HomePage() {
 
         {/* ── Footer ── */}
         <footer className='mt-16 pt-6 border-t hairline flex items-center justify-between text-[11px] text-ink-400 font-mono tracking-wider'>
-          <span>VIDEO DRIVEN SKILL</span>
+          <span>VIDEO DRIVEN SKILL · {new Date().getFullYear()} · Open Source</span>
           <span>Built for reuse</span>
         </footer>
       </div>
