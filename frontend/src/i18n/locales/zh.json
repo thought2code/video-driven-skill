@@ -37,7 +37,7 @@
   "home": {
     "heroTitle": "让<em>视频</em>化作可复用的 Skill",
     "heroSubtitle": "上传一段操作录屏，让 AI 读懂你的每一步操作，生成可直接运行、可再次调整的自动化脚本。",
-    "uploadVideo": "上传操作视频",
+    "uploadVideo": "上传视频",
     "uploadHint": "拖拽文件到此处，支持 MP4、MOV，最大 500MB",
     "chooseFile": "选择文件",
     "startRecording": "开始录屏",

@@ -188,24 +188,28 @@ export default function HomePage() {
 
         {/* ── Quick Actions + Upload ── */}
         <section className='mt-8 stagger'>
-          <div className={`grid grid-cols-1 sm:grid-cols-2 gap-5 ${canRecord ? 'xl:grid-cols-4' : 'lg:grid-cols-3'}`}>
+          <div className={`grid grid-cols-1 items-stretch sm:grid-cols-2 gap-5 ${canRecord ? 'xl:grid-cols-4' : 'lg:grid-cols-3'}`}>
 
             {/* Upload zone */}
-            <div
+            <QuickActionCard
               onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
               onDragLeave={() => setDragging(false)}
               onDrop={handleDrop}
               onClick={() => !uploading && inputRef.current?.click()}
-              className={`relative card-paper overflow-hidden cursor-pointer group transition-all duration-500
-                ${dragging ? 'ring-2 ring-umber-400/50 -translate-y-0.5' : 'hover:-translate-y-0.5 hover:shadow-lift'}`}
-              style={{ padding: '40px 32px' }}
-            >
-              <input ref={inputRef} type='file' accept='video/*' className='hidden'
-                onChange={(e) => handleFile(e.target.files[0])} />
-              <Corners />
-
-              {uploading ? (
-                <div className='text-center py-4'>
+              className={dragging ? 'ring-2 ring-umber-400/50 -translate-y-0.5' : ''}
+              eyebrow='Step 01 · Upload'
+              icon={<UploadIcon />}
+              iconTone='umber'
+              title={t('home.uploadVideo')}
+              hint={t('home.uploadHint')}
+              action={(
+                <span className='inline-flex items-center gap-2 text-[12px] font-medium text-umber-600 transition-transform duration-500 group-hover:translate-x-1'>
+                  {t('home.chooseFile')}
+                  <ArrowIcon />
+                </span>
+              )}
+              overlay={uploading ? (
+                <div className='flex flex-1 flex-col items-center justify-center py-4 text-center'>
                   <div className='inline-flex flex-col items-center gap-4'>
                     <RingProgress value={progress} />
                     <div>
@@ -214,56 +218,40 @@ export default function HomePage() {
                     </div>
                   </div>
                 </div>
-              ) : (
-                <div className='relative text-center'>
-                  <div className='eyebrow mb-4'>Step 01 · Upload</div>
-                  <div className='font-display text-[26px] leading-tight text-ink-900 mb-2'>
-                    {t('home.uploadVideo')}
-                  </div>
-                  <p className='text-ink-500 text-[12.5px] max-w-[220px] mx-auto leading-relaxed mb-5'>
-                    {t('home.uploadHint')}
-                  </p>
-                  <div className='inline-flex items-center gap-2 text-[12px] text-umber-600 font-medium
-                                  transition-transform duration-500 group-hover:translate-x-1'>
-                    <span>{t('home.chooseFile')}</span>
-                    <ArrowIcon />
-                  </div>
-                </div>
-              )}
-            </div>
+              ) : null}
+            >
+              <input ref={inputRef} type='file' accept='video/*' className='hidden'
+                onChange={(e) => handleFile(e.target.files[0])} />
+            </QuickActionCard>
 
             {canRecord && (
-              <div
+              <QuickActionCard
                 onClick={() => !uploading && !importing && setRecorderOpen(true)}
-                className={`relative card-paper overflow-hidden cursor-pointer group transition-all duration-500
-                  ${uploading || importing ? 'opacity-60 pointer-events-none' : 'hover:-translate-y-0.5 hover:shadow-lift'}`}
-                style={{ padding: '40px 32px' }}
-              >
-                <Corners />
-                <div className='relative text-center'>
-                  <div className='eyebrow mb-4'>Step 01 · Record</div>
-                  <div className='w-11 h-11 mx-auto rounded-xl bg-clay-500/10 flex items-center justify-center text-clay-600 mb-3 group-hover:bg-clay-500/15 transition-colors duration-300'>
-                    <RecordIcon />
-                  </div>
-                  <div className='font-display text-[26px] leading-tight text-ink-900 mb-2'>
-                    {t('home.startRecording')}
-                  </div>
-                  <p className='text-ink-500 text-[12.5px] max-w-[220px] mx-auto leading-relaxed mb-5'>
-                    {t('home.recordHint')}
-                  </p>
-                  <div className='inline-flex items-center gap-2 text-[12px] text-clay-600 font-medium transition-transform duration-500 group-hover:translate-x-1'>
-                    <span>{t('home.recordNow')}</span>
+                disabled={uploading || importing}
+                eyebrow='Step 01 · Record'
+                icon={<RecordIcon />}
+                iconTone='clay'
+                title={t('home.startRecording')}
+                hint={t('home.recordHint')}
+                action={(
+                  <span className='inline-flex items-center gap-2 text-[12px] font-medium text-umber-600 transition-transform duration-500 group-hover:translate-x-1'>
+                    {t('home.recordNow')}
                     <ArrowIcon />
-                  </div>
-                </div>
-              </div>
+                  </span>
+                )}
+              />
             )}
 
             {/* Import skill */}
-            <div
+            <QuickActionCard
               onClick={() => !importing && importInputRef.current?.click()}
-              className='relative card-paper overflow-hidden cursor-pointer group transition-all duration-500 hover:-translate-y-0.5 hover:shadow-lift flex flex-col items-center justify-center text-center'
-              style={{ padding: '40px 32px' }}
+              eyebrow='Step 02 · Import'
+              icon={<ImportIcon />}
+              iconTone='neutral'
+              title={importing ? t('common.importing') : t('home.importSkillZip')}
+              hint={importing
+                ? <span className='font-mono text-[11px] tracking-wider text-umber-600'>{importProgress}%</span>
+                : t('home.importSkillHint')}
             >
               <input
                 ref={importInputRef}
@@ -272,38 +260,17 @@ export default function HomePage() {
                 className='hidden'
                 onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; handleImportSkill(f) }}
               />
-              <Corners />
-              <div className='eyebrow mb-4'>Step 02 · Import</div>
-              <div className='w-11 h-11 rounded-xl bg-paper-200/70 flex items-center justify-center text-ink-500 mb-3 group-hover:bg-umber-50 transition-colors duration-300'>
-                <ImportIcon />
-              </div>
-              <div className='font-display text-[17px] text-ink-900 mb-1'>
-                {importing ? t('common.importing') : t('home.importSkillZip')}
-              </div>
-              {importing && (
-                <div className='font-mono text-[11px] text-umber-600 tracking-wider'>{importProgress}%</div>
-              )}
-              {!importing && (
-                <p className='text-ink-400 text-[12px]'>{t('home.importSkillHint')}</p>
-              )}
-            </div>
+            </QuickActionCard>
 
             {/* Browse all skills */}
-            <div
+            <QuickActionCard
               onClick={() => { reset(); setActiveTab('skill'); navigate('/playground/history') }}
-              className='relative card-paper overflow-hidden cursor-pointer group transition-all duration-500 hover:-translate-y-0.5 hover:shadow-lift flex flex-col items-center justify-center text-center'
-              style={{ padding: '40px 32px' }}
-            >
-              <Corners />
-              <div className='eyebrow mb-4'>Step 03 · Browse</div>
-              <div className='w-11 h-11 rounded-xl bg-paper-200/70 flex items-center justify-center text-ink-500 mb-3 group-hover:bg-umber-50 transition-colors duration-300'>
-                <BrowseIcon />
-              </div>
-              <div className='font-display text-[17px] text-ink-900 mb-1'>{t('home.allSkills')}</div>
-              <p className='text-ink-400 text-[12px]'>
-                {t('home.allSkillsHint')}
-              </p>
-            </div>
+              eyebrow='Step 03 · Browse'
+              icon={<BrowseIcon />}
+              iconTone='neutral'
+              title={t('home.allSkills')}
+              hint={t('home.allSkillsHint')}
+            />
           </div>
         </section>
 
@@ -467,6 +434,63 @@ export default function HomePage() {
 
 /* ── Atoms ── */
 
+const QUICK_ACTION_ICON_TONE = {
+  umber: 'bg-umber-500/10 text-umber-600 group-hover:bg-umber-500/15',
+  clay: 'bg-clay-500/10 text-clay-600 group-hover:bg-clay-500/15',
+  neutral: 'bg-paper-200/70 text-ink-500 group-hover:bg-umber-50',
+}
+
+function QuickActionCard({
+  eyebrow,
+  icon,
+  iconTone = 'neutral',
+  title,
+  hint,
+  action,
+  overlay,
+  onClick,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+  disabled = false,
+  className = '',
+  children,
+}) {
+  return (
+    <div
+      onClick={disabled ? undefined : onClick}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+      className={`group relative flex h-full min-h-[300px] flex-col overflow-hidden card-paper transition-all duration-500
+        ${disabled ? 'pointer-events-none opacity-60' : 'cursor-pointer hover:-translate-y-0.5 hover:shadow-lift'}
+        ${className}`}
+      style={{ padding: '40px 32px' }}
+    >
+      <Corners />
+      {children}
+      {overlay ?? (
+        <div className='flex flex-1 flex-col text-center'>
+          <div className='eyebrow mb-4 shrink-0'>{eyebrow}</div>
+          <div className={`mx-auto mb-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors duration-300 ${QUICK_ACTION_ICON_TONE[iconTone]}`}>
+            {icon}
+          </div>
+          <h3 className='font-display mx-auto mb-2 flex min-h-[4.5rem] max-w-[240px] shrink-0 items-center justify-center px-1 text-[26px] leading-tight text-ink-900'>
+            {title}
+          </h3>
+          <p className='mx-auto min-h-[3.25rem] max-w-[220px] shrink-0 text-[12.5px] leading-relaxed text-ink-500'>
+            {hint}
+          </p>
+          <div className='min-h-0 flex-1' aria-hidden />
+          <div className='flex min-h-[1.25rem] shrink-0 items-center justify-center pt-5'>
+            {action}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function Corners() {
   return (
     <>
@@ -485,6 +509,15 @@ function ArrowIcon({ small, tiny }) {
   return (
     <svg width={size} height={size} viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='1.6' strokeLinecap='round' strokeLinejoin='round'>
       <path d='M5 12h14M13 5l7 7-7 7' />
+    </svg>
+  )
+}
+
+function UploadIcon() {
+  return (
+    <svg width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round'>
+      <rect x='3' y='6' width='13' height='12' rx='2' />
+      <path d='M16 10l5-3v10l-5-3z' />
     </svg>
   )
 }

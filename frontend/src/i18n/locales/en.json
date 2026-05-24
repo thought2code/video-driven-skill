@@ -37,7 +37,7 @@
   "home": {
     "heroTitle": "Turn <em>video</em> into reusable Skills",
     "heroSubtitle": "Upload a screen recording. AI reads every step you take and generates runnable automation you can refine.",
-    "uploadVideo": "Upload operation video",
+    "uploadVideo": "Upload video",
     "uploadHint": "Drag a file here. MP4, MOV supported, up to 500MB",
     "chooseFile": "Choose file",
     "startRecording": "Start recording",
