@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import useAppStore from '../store/useAppStore.js'
 import { regenerateSkill, acceptCandidate, discardCandidate, fetchSkillVersions } from '../api/client.js'
 import PromptTemplateSelector from './PromptTemplateSelector.jsx'
+import AppSelect from './AppSelect.jsx'
 
 export default function CodeComparisonView({ onClose }) {
   const { t } = useTranslation()
@@ -57,6 +58,11 @@ export default function CodeComparisonView({ onClose }) {
     ...skillFiles.map(f => f.path),
     ...(candidate?.files?.map(f => f.path) || [])
   ])].filter(path => path.endsWith('.js') || path.endsWith('.md') || path.endsWith('.json'))
+
+  const fileSelectOptions = useMemo(
+    () => allFilePaths.map(path => ({ value: path, label: path })),
+    [allFilePaths],
+  )
 
   // 执行重新生成
   const handleRegenerate = async () => {
@@ -273,15 +279,15 @@ export default function CodeComparisonView({ onClose }) {
           </h3>
           
           {/* 文件选择器 */}
-          <select
+          <AppSelect
             value={activeFile}
-            onChange={(e) => setActiveFile(e.target.value)}
-            className="bg-slate-900/50 border border-slate-700 rounded px-2 py-1 text-xs text-slate-300"
-          >
-            {allFilePaths.map(path => (
-              <option key={path} value={path}>{path}</option>
-            ))}
-          </select>
+            onChange={setActiveFile}
+            options={fileSelectOptions}
+            variant='dark'
+            size='sm'
+            className='min-w-[10rem] max-w-[14rem]'
+            aria-label={t('regenerate.compareFiles')}
+          />
         </div>
 
         <div className="flex items-center gap-2">

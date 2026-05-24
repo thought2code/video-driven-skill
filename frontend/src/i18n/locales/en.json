@@ -215,6 +215,7 @@
     "noTemplates": "No saved templates",
     "saveDialogTitle": "Save as template",
     "templateName": "Template name",
+    "templateCategory": "Category",
     "deleteConfirm": "Delete this template?",
     "category": {
       "errorHandling": "Error handling",

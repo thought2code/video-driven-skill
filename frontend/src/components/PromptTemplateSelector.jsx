@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchPromptTemplates, createPromptTemplate, deletePromptTemplate, incrementTemplateUseCount } from '../api/client.js'
+import AppSelect from './AppSelect.jsx'
 
 export default function PromptTemplateSelector({ value, onChange, onSelect }) {
   const { t } = useTranslation()
@@ -144,15 +145,14 @@ export default function PromptTemplateSelector({ value, onChange, onSelect }) {
               className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white mb-3"
             />
             
-            <select
+            <AppSelect
               value={newTemplateCategory}
-              onChange={(e) => setNewTemplateCategory(e.target.value)}
-              className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white mb-4"
-            >
-              {categoryOptions.map(opt => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
+              onChange={setNewTemplateCategory}
+              options={categoryOptions}
+              variant='dark'
+              className='mb-4'
+              aria-label={t('promptTemplate.templateCategory')}
+            />
             
             <div className="flex gap-2">
               <button

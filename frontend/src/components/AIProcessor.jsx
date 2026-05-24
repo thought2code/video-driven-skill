@@ -9,11 +9,10 @@ import {
   providerHasModel,
   resolveInitialAiSelection,
 } from '../config/aiProviders.js'
+import AppSelect from './AppSelect.jsx'
 
 const fieldBase =
-  'w-full rounded-xl border border-ink-900/10 bg-paper-50 px-3 py-2 text-xs text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-umber-400'
-
-const selectFieldClass = `${fieldBase} font-sans`
+  'w-full rounded-xl border border-ink-900/10 bg-paper-50 px-3 py-2 text-xs text-ink-900 outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-ink-400 focus:border-umber-400 focus:shadow-[0_0_0_3px_rgba(184,138,94,0.1)]'
 
 const inputFieldClass = `${fieldBase} font-mono`
 
@@ -56,6 +55,16 @@ export default function AIProcessor() {
     const modelName = modelDef ? t(modelDef.labelKey) : aiModel || '—'
     return `${providerName} · ${modelName}`
   }, [activeProvider, aiModel, isCustom, isServer, t])
+
+  const providerOptions = useMemo(
+    () => providers.map(p => ({ value: p.id, label: t(p.nameKey) })),
+    [providers, t],
+  )
+
+  const modelOptions = useMemo(() => {
+    if (!activeProvider?.models?.length) return []
+    return activeProvider.models.map(m => ({ value: m.id, label: t(m.labelKey) }))
+  }, [activeProvider, t])
 
   const canGenerate = frames.length > 0 && requirement.trim().length > 0 && !isGenerating
 
@@ -177,37 +186,31 @@ export default function AIProcessor() {
 
         {showModelConfig && (
           <div className='mt-3 space-y-3 border-t border-ink-900/8 pt-3'>
-            <label className='block'>
-              <span className='mb-1 block text-xs text-ink-500'>{t('aiProcessor.provider')}</span>
-              <select
+            <div className='block'>
+              <span className='mb-1.5 block text-xs text-ink-500'>{t('aiProcessor.provider')}</span>
+              <AppSelect
                 value={providerId}
-                onChange={e => applyProvider(e.target.value)}
-                className={selectFieldClass}
-              >
-                {providers.map(p => (
-                  <option key={p.id} value={p.id}>{t(p.nameKey)}</option>
-                ))}
-              </select>
+                onChange={applyProvider}
+                options={providerOptions}
+                aria-label={t('aiProcessor.provider')}
+              />
               {activeProvider?.hintKey && (
-                <p className='mt-1.5 text-[11px] leading-relaxed text-ink-400'>
+                <p className='mt-2 text-[11px] leading-relaxed text-ink-400 transition-opacity duration-200'>
                   {t(activeProvider.hintKey)}
                 </p>
               )}
-            </label>
+            </div>
 
-            {!isServer && !isCustom && activeProvider && activeProvider.models.length > 0 && (
-              <label className='block'>
-                <span className='mb-1 block text-xs text-ink-500'>{t('aiProcessor.visionModel')}</span>
-                <select
+            {!isServer && !isCustom && activeProvider && modelOptions.length > 0 && (
+              <div className='block animate-[fade-up_400ms_cubic-bezier(0.22,1,0.36,1)_both]'>
+                <span className='mb-1.5 block text-xs text-ink-500'>{t('aiProcessor.visionModel')}</span>
+                <AppSelect
                   value={aiModel}
-                  onChange={e => setAiModel(e.target.value)}
-                  className={selectFieldClass}
-                >
-                  {activeProvider.models.map(m => (
-                    <option key={m.id} value={m.id}>{t(m.labelKey)}</option>
-                  ))}
-                </select>
-              </label>
+                  onChange={setAiModel}
+                  options={modelOptions}
+                  aria-label={t('aiProcessor.visionModel')}
+                />
+              </div>
             )}
 
             {isCustom && (

@@ -6,6 +6,7 @@ import {
   Play, Square, RefreshCw, FlaskConical, AlertTriangle, Check, AlertCircle,
   Skull, Trash2, Clipboard, FileText, BarChart3, Loader2, Save, RotateCcw, Timer
 } from 'lucide-react'
+import AppSelect from './AppSelect.jsx'
 
 const PLATFORMS = ['browser', 'android', 'ios', 'computer']
 const DEFAULT_TIMEOUT = 600
@@ -319,18 +320,16 @@ export default function SkillRunner() {
             {loadingDevices ? t('common.refreshing') : t('common.refresh')}
           </button>
         </label>
-        <select
+        <AppSelect
           value={deviceId}
-          onChange={e => setDeviceId(e.target.value)}
+          onChange={setDeviceId}
           disabled={isRunning}
-          className='w-full bg-paper-50 border border-ink-900/10 rounded-xl px-3 py-2 text-[13px] text-ink-900 focus:outline-none focus:border-umber-500 transition-colors disabled:opacity-50'
-        >
-          {devices.map(device => (
-            <option key={device.id} value={device.id}>
-              {device.model}{platform === 'android' ? ` (${device.id.substring(0, 8)}…)` : ''}
-            </option>
-          ))}
-        </select>
+          options={devices.map(device => ({
+            value: device.id,
+            label: `${device.model}${platform === 'android' ? ` (${device.id.substring(0, 8)}…)` : ''}`,
+          }))}
+          aria-label={t('skillRunner.device')}
+        />
         {platform === 'android' && deviceId && (
           <div className='text-[11px] text-ink-400 font-mono tracking-wide'>
             STATE ·{' '}

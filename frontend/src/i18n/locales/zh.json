@@ -222,6 +222,7 @@
     "noTemplates": "暂无保存的模板",
     "saveDialogTitle": "保存为模板",
     "templateName": "模板名称",
+    "templateCategory": "分类",
     "deleteConfirm": "确定要删除这个模板吗？",
     "category": {
       "errorHandling": "错误处理",

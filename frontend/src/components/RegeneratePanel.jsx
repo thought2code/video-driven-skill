@@ -9,6 +9,7 @@ import {
   Sparkles, X, Loader2, Lightbulb, Maximize2, Minimize2, 
   History, Check, Trash2, ChevronDown, Send, FileCode
 } from 'lucide-react'
+import AppSelect from './AppSelect.jsx'
 
 export default function RegeneratePanel({ onClose, associatedFrames = null }) {
   const { t } = useTranslation()
@@ -101,6 +102,11 @@ export default function RegeneratePanel({ onClose, associatedFrames = null }) {
     ...skillFiles.map(f => f.path),
     ...(candidate?.files?.map(f => f.path) || [])
   ])].filter(path => path.endsWith('.js') || path.endsWith('.md') || path.endsWith('.json'))
+
+  const fileSelectOptions = useMemo(
+    () => allFilePaths.map(path => ({ value: path, label: path })),
+    [allFilePaths],
+  )
 
   // 执行重新生成
   const handleRegenerate = async () => {
@@ -321,15 +327,15 @@ export default function RegeneratePanel({ onClose, associatedFrames = null }) {
                   <FileCode className="w-4 h-4 text-slate-400" />
                   <span className="text-slate-300 font-medium">{t('regenerate.currentCode')}</span>
                 </div>
-                <select
+                <AppSelect
                   value={activeFile}
-                  onChange={(e) => setActiveFile(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-slate-300"
-                >
-                  {allFilePaths.map(path => (
-                    <option key={path} value={path}>{path}</option>
-                  ))}
-                </select>
+                  onChange={setActiveFile}
+                  options={fileSelectOptions}
+                  variant='dark'
+                  size='sm'
+                  className='min-w-[10rem] max-w-[14rem]'
+                  aria-label={t('regenerate.currentCode')}
+                />
               </div>
               
               <div className="flex-1 overflow-auto p-4 bg-slate-950">
@@ -488,15 +494,15 @@ export default function RegeneratePanel({ onClose, associatedFrames = null }) {
           {/* File Selector */}
           <div className="px-6 py-3 border-b border-slate-800 flex items-center gap-4">
             <span className="text-xs text-slate-500 uppercase tracking-wider">{t('regenerate.compareFiles')}</span>
-            <select
+            <AppSelect
               value={activeFile}
-              onChange={(e) => setActiveFile(e.target.value)}
-              className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-300"
-            >
-              {allFilePaths.map(path => (
-                <option key={path} value={path}>{path}</option>
-              ))}
-            </select>
+              onChange={setActiveFile}
+              options={fileSelectOptions}
+              variant='dark'
+              size='sm'
+              className='min-w-[12rem] max-w-xs'
+              aria-label={t('regenerate.compareFiles')}
+            />
             
             <button
               onClick={() => setShowHistory(!showHistory)}
