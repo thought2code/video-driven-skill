@@ -4,9 +4,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ['Fraunces', '"Noto Serif SC"', 'ui-serif', 'Georgia', 'serif'],
-        sans: ['Manrope', '"Noto Sans SC"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        display: ['var(--font-display)'],
+        sans: ['var(--font-sans)'],
+        mono: ['var(--font-mono)'],
       },
       colors: {
         paper: {

@@ -122,7 +122,7 @@ export default function PlaygroundPage() {
           <div className='w-px h-5 bg-ink-900/10'></div>
 
           <div className='flex items-baseline gap-2'>
-            <span className='font-display text-xl text-ink-900' style={{ fontVariationSettings: "'opsz' 120" }}>
+            <span className='font-display text-xl text-ink-900'>
               Video Driven <span className='italic text-umber-500'>Skill</span>
             </span>
             <span className='eyebrow'>Studio</span>
@@ -313,7 +313,7 @@ export default function PlaygroundPage() {
                         <path d='M13 2L4.09 12.97 12 13.5l-1 8.5 8.91-10.97L12 10.5l1-8.5z' />
                       </svg>
                     </div>
-                    <div className='font-display text-2xl text-ink-900 mb-3' style={{ fontVariationSettings: "'opsz' 120" }}>
+                    <div className='font-display text-2xl text-ink-900 mb-3'>
                       {t('playground.noSkillTitle')}
                     </div>
                     <p className='text-ink-500 text-sm leading-relaxed'>
@@ -355,7 +355,7 @@ function EmptyUploadHint({ onClick, onRecord, navigate, setVideo, setActiveTab, 
     <div className='flex-1 flex flex-col items-center justify-center px-8 py-16'>
       <div className='text-center max-w-lg w-full'>
         <div className='eyebrow mb-5'>Step · 01 — Upload</div>
-        <h2 className='font-display text-4xl text-ink-900 mb-4' style={{ fontVariationSettings: "'opsz' 120" }}>
+        <h2 className='font-display text-4xl text-ink-900 mb-4'>
           <Trans
             i18nKey='playground.emptyUploadTitle'
             components={{ em: <span className='italic text-umber-500' /> }}

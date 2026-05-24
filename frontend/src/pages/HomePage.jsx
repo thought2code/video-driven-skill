@@ -172,7 +172,7 @@ export default function HomePage() {
               <Trans
                 i18nKey='home.heroTitle'
                 components={{
-                  em: <span className='italic text-umber-500' style={{ fontVariationSettings: "'SOFT' 60, 'opsz' 144" }} />,
+                  em: <span className='italic text-umber-500' />,
                 }}
               />
             </h1>

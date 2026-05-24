@@ -246,7 +246,6 @@ export default function ScreenRecorderModal({ open, onClose, onUpload }) {
             <h2
               id='screen-recorder-title'
               className='font-display text-[26px] text-ink-900 mt-1'
-              style={{ fontVariationSettings: "'opsz' 96" }}
             >
               {titleByPhase[phase] || t('recorder.phases.default')}
             </h2>

@@ -60,7 +60,6 @@ export default function AppDialog({
               <h2
                 id='app-dialog-title'
                 className='font-display text-[22px] leading-snug text-ink-900'
-                style={{ fontVariationSettings: "'opsz' 96" }}
               >
                 {title}
               </h2>

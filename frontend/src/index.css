@@ -14,6 +14,18 @@
     --umber-400: #B88A5E;
     --umber-500: #9A6B3F;
     --umber-600: #7F5628;
+
+    /* EN: Plex + Noto fallback · ZH: Noto (Source Han) first, Plex for Latin */
+    --font-sans: 'IBM Plex Sans', 'Noto Sans SC', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'IBM Plex Serif', 'Noto Serif SC', ui-serif, Georgia, serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  }
+
+  html[lang='zh-CN'] {
+    --font-sans: 'Noto Sans SC', 'IBM Plex Sans', ui-sans-serif, system-ui, 'PingFang SC',
+      'Microsoft YaHei', sans-serif;
+    --font-display: 'Noto Serif SC', 'IBM Plex Serif', ui-serif, 'Songti SC', 'SimSun', serif;
+    --font-mono: 'JetBrains Mono', 'Noto Sans SC', ui-monospace, monospace;
   }
 
   * { box-sizing: border-box; }
@@ -25,9 +37,13 @@
     font-feature-settings: 'ss01', 'cv11', 'tnum';
   }
 
+  html[lang='zh-CN'] {
+    font-feature-settings: normal;
+  }
+
   body {
     margin: 0;
-    font-family: 'Manrope', 'Noto Sans SC', system-ui, sans-serif;
+    font-family: var(--font-sans);
     font-weight: 400;
     background: var(--paper-100);
     color: var(--ink-900);
@@ -67,12 +83,13 @@
 
   #root { position: relative; z-index: 1; }
 
-  /* Display type via Fraunces variable axes for that subtle warmth */
   .font-display {
-    font-family: 'Fraunces', 'Noto Serif SC', serif;
-    font-optical-sizing: auto;
-    font-variation-settings: 'SOFT' 30, 'opsz' 96;
+    font-family: var(--font-display);
     letter-spacing: -0.012em;
+  }
+
+  html[lang='zh-CN'] .font-display {
+    letter-spacing: 0;
   }
 
   ::selection {
@@ -88,7 +105,7 @@
 
   /* Eyebrow — mono caps with wider tracking → technical register */
   .eyebrow {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 10.5px;
     font-weight: 500;
     letter-spacing: 0.24em;
@@ -162,7 +179,7 @@
 
   /* Technical tick row — small caps + numeric marks for telemetry rows */
   .tick-row {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 10.5px;
     letter-spacing: 0.08em;
     color: var(--ink-400);
