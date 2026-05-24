@@ -230,7 +230,7 @@ export default function ScreenRecorderModal({ open, onClose, onUpload }) {
       <button
         type='button'
         aria-label={t('common.close')}
-        className='absolute inset-0 bg-ink-900/40 backdrop-blur-[4px] animate-fade-in'
+        className='absolute inset-0 cursor-pointer bg-ink-900/40 backdrop-blur-[4px] animate-fade-in'
         onClick={phase !== PHASE.UPLOADING ? handleClose : undefined}
       />
       <div
@@ -255,7 +255,7 @@ export default function ScreenRecorderModal({ open, onClose, onUpload }) {
               type='button'
               aria-label={t('common.close')}
               onClick={handleClose}
-              className='shrink-0 w-9 h-9 rounded-full border hairline-strong text-ink-500 hover:text-ink-900 hover:bg-paper-200/80 transition-colors'
+              className='shrink-0 w-9 h-9 cursor-pointer rounded-full border hairline-strong text-ink-500 hover:text-ink-900 hover:bg-paper-200/80 transition-colors'
             >
               <svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='1.6' strokeLinecap='round'>
                 <path d='M18 6L6 18M6 6l12 12' />

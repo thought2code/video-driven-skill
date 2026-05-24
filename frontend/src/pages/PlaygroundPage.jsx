@@ -169,7 +169,7 @@ export default function PlaygroundPage() {
                 disabled={tab.disabled}
                 className={`relative px-4 py-1.5 rounded-full transition-all duration-300
                   ${activeTab === tab.id ? 'bg-ink-900 text-paper-50 shadow-soft' : 'text-ink-500 hover:text-ink-900'}
-                  ${tab.disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
+                  ${tab.disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'}`}
               >
                 {tab.label}
                 {tab.badge && (

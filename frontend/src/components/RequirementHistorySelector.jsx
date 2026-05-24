@@ -91,7 +91,7 @@ export default function RequirementHistorySelector() {
               <button
                 key={item.id}
                 onClick={() => handleSelect(item)}
-                className="w-full border-b border-ink-900/6 px-3 py-2 text-left transition-colors last:border-0 hover:bg-paper-100"
+                className="w-full cursor-pointer border-b border-ink-900/6 px-3 py-2 text-left transition-colors last:border-0 hover:bg-paper-100"
               >
                 <div className="line-clamp-2 text-xs text-ink-700">{item.content}</div>
                 <div className="flex items-center gap-2 mt-1">

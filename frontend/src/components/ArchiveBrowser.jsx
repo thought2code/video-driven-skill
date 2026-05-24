@@ -113,7 +113,7 @@ export default function ArchiveBrowser({ onSelectVideo, onSelectFrames }) {
                 selectedVideo?.id === video.id ? 'border-umber-400 bg-umber-50/70' : 'border-ink-900/8 bg-paper-100/50 hover:bg-paper-50'
               }`}>
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-paper-200 text-sm text-ink-500">VID</div>
-                <div className="flex-1 min-w-0" onClick={() => handleSelectVideo(video)}>
+                <div className="flex-1 min-w-0 cursor-pointer" onClick={() => handleSelectVideo(video)}>
                   <div className="truncate text-xs text-ink-700">{video.filename}</div>
                   <div className="text-[10px] text-ink-400">
                     {video.duration}s · {formatSize(video.fileSize)} · {t('home.frameCount', { count: video.frameCount || 0 })}

@@ -36,7 +36,7 @@ export default function AppDialog({
       <button
         type='button'
         aria-label={t('common.close')}
-        className='absolute inset-0 bg-ink-900/35 backdrop-blur-[3px] animate-fade-in'
+        className='absolute inset-0 cursor-pointer bg-ink-900/35 backdrop-blur-[3px] animate-fade-in'
         onClick={onClose}
       />
       <Box

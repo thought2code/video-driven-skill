@@ -95,7 +95,7 @@ export default function FrameTimeline() {
           onDragOver={(e) => handleDragOver(e, index)}
           onDragLeave={handleDragLeave}
           onDrop={(e) => handleDrop(e, index)}
-          className={`group relative flex-shrink-0 overflow-hidden rounded-2xl border bg-paper-50 p-1 shadow-soft transition-all
+          className={`group relative flex-shrink-0 cursor-pointer overflow-hidden rounded-2xl border bg-paper-50 p-1 shadow-soft transition-all
             ${selectedFrameId === frame.frameId ? 'border-umber-400 -translate-y-0.5 shadow-lift' : 'border-ink-900/10 hover:border-ink-900/20'}
             ${dragOverIndex === index ? 'ring-2 ring-umber-400 ring-offset-2 ring-offset-paper-50' : ''}
             ${dragItemRef.current === index ? 'opacity-50' : ''}`}
