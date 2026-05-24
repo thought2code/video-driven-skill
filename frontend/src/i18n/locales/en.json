@@ -140,13 +140,74 @@
     "defaultModel": "Using backend default model",
     "collapse": "Collapse",
     "configure": "Configure",
+    "provider": "Provider",
     "visionModel": "Vision model",
+    "customBaseUrl": "Base URL",
+    "customModel": "Model ID",
+    "customBaseUrlPlaceholder": "https://api.example.com/v1",
+    "customModelPlaceholder": "model-name-with-vision",
+    "getApiKey": "Get API key",
+    "apiKey": "API Key",
     "apiKeyPlaceholder": "Leave empty to use AI_API_KEY from backend .env",
-    "configNote": "Base URL and model name are saved in this browser. API Key is kept for this session only and sent to your local backend with generate requests.",
+    "configNote": "Provider and model are saved in this browser. API Key is kept for this session only and sent to your local backend with generate requests.",
     "analyzing": "AI is analyzing…",
     "generateSkill": "Generate Skill",
     "needFrames": "Extract frames first",
-    "needRequirement": "Enter a user requirement"
+    "needRequirement": "Enter a user requirement",
+    "providers": {
+      "server": {
+        "name": "Server default (.env)",
+        "hint": "Uses AI_BASE_URL, AI_MODEL, and AI_API_KEY from the backend environment."
+      },
+      "openai": {
+        "name": "OpenAI",
+        "hint": "GPT-4o family with image input. Create a key in the OpenAI dashboard."
+      },
+      "google": {
+        "name": "Google",
+        "hint": "Gemini via the OpenAI-compatible endpoint. Use a Google AI Studio API key."
+      },
+      "anthropic": {
+        "name": "Anthropic",
+        "hint": "Claude via Anthropic's OpenAI-compatible API. Vision-capable Claude models only."
+      },
+      "custom": {
+        "name": "Custom (advanced)",
+        "hint": "Any OpenAI-compatible endpoint that accepts image inputs in chat completions."
+      },
+      "aliyun": { "name": "Alibaba Cloud (Qwen)", "hint": "" },
+      "doubao": { "name": "ByteDance (Doubao)", "hint": "" },
+      "deepseek": { "name": "DeepSeek", "hint": "" },
+      "qwen": { "name": "Qwen", "hint": "" },
+      "zhipu": { "name": "Zhipu GLM", "hint": "" },
+      "moonshot": { "name": "Moonshot Kimi", "hint": "" }
+    },
+    "models": {
+      "openai": {
+        "gpt4o": "GPT-4o (recommended)",
+        "gpt4oMini": "GPT-4o mini"
+      },
+      "google": {
+        "gemini20Flash": "Gemini 2.0 Flash",
+        "gemini25Flash": "Gemini 2.5 Flash",
+        "gemini15Pro": "Gemini 1.5 Pro"
+      },
+      "anthropic": {
+        "sonnet46": "Claude Sonnet 4.6",
+        "opus47": "Claude Opus 4.7",
+        "haiku35": "Claude 3.5 Haiku"
+      },
+      "aliyun": { "qwen3VlPlus": "Qwen3 VL Plus", "vlMax": "Qwen-VL Max", "vl72b": "Qwen2.5-VL 72B" },
+      "doubao": {
+        "seed16Vision": "Doubao Seed 1.6 Vision",
+        "visionPro15": "Doubao 1.5 Vision Pro",
+        "visionLite15": "Doubao 1.5 Vision Lite"
+      },
+      "deepseek": { "v4Flash": "DeepSeek V4 Flash", "v4Pro": "DeepSeek V4 Pro" },
+      "qwen": { "vlMax": "Qwen-VL Max", "vlPlus": "Qwen-VL Plus", "vl72b": "Qwen2.5-VL 72B" },
+      "zhipu": { "glm45v": "GLM-4.5V", "glm4vPlus": "GLM-4V Plus", "glm4vFlash": "GLM-4V Flash" },
+      "moonshot": { "v32kVision": "Moonshot V1 32K Vision", "v8kVision": "Moonshot V1 8K Vision" }
+    }
   },
   "promptTemplate": {
     "commonTemplates": "Quick templates",

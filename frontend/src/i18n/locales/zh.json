@@ -140,13 +140,81 @@
     "defaultModel": "使用后端默认模型",
     "collapse": "收起",
     "configure": "配置",
+    "provider": "服务商",
     "visionModel": "视觉模型",
+    "customBaseUrl": "API 地址 (Base URL)",
+    "customModel": "模型 ID",
+    "customBaseUrlPlaceholder": "https://api.example.com/v1",
+    "customModelPlaceholder": "支持图像输入的模型名称",
+    "getApiKey": "获取 API Key",
+    "apiKey": "API Key",
     "apiKeyPlaceholder": "不填写则使用后端 .env 的 AI_API_KEY",
-    "configNote": "Base URL 和模型名会保存在本机浏览器；API Key 只在本次页面会话中保存，并随生成请求发送到本地后端。",
+    "configNote": "服务商与模型会保存在本机浏览器；API Key 仅在当前页面会话中保留，并随生成请求发送到本地后端。",
     "analyzing": "AI 正在分析...",
     "generateSkill": "生成 Skill",
     "needFrames": "请先提取帧",
-    "needRequirement": "请填写用户诉求"
+    "needRequirement": "请填写用户诉求",
+    "providers": {
+      "server": {
+        "name": "服务端默认 (.env)",
+        "hint": "使用后端环境变量中的 AI_BASE_URL、AI_MODEL、AI_API_KEY。"
+      },
+      "openai": { "name": "OpenAI", "hint": "" },
+      "google": { "name": "Google", "hint": "" },
+      "anthropic": { "name": "Anthropic", "hint": "" },
+      "aliyun": {
+        "name": "阿里云（通义千问 / Qwen）",
+        "hint": "阿里云百炼 DashScope API Key，OpenAI 兼容接口，请选择视觉（VL）模型。"
+      },
+      "doubao": {
+        "name": "字节跳动（豆包 / Doubao）",
+        "hint": "火山方舟 API Key；模型 ID 需与控制台已开通的推理接入点或模型名称一致。"
+      },
+      "zhipu": {
+        "name": "智谱 AI（GLM）",
+        "hint": "智谱开放平台 API Key，请选择 GLM 视觉模型。"
+      },
+      "moonshot": {
+        "name": "月之暗面（Kimi）",
+        "hint": "Moonshot 开放平台 API Key，请选择 Vision 预览模型。"
+      },
+      "deepseek": {
+        "name": "DeepSeek",
+        "hint": "DeepSeek 开放平台 API Key，需使用支持图像输入的模型。"
+      },
+      "custom": {
+        "name": "自定义（高级）",
+        "hint": "任意兼容 OpenAI Chat Completions 且支持图像输入的接口。"
+      }
+    },
+    "models": {
+      "openai": { "gpt4o": "", "gpt4oMini": "" },
+      "google": { "gemini20Flash": "", "gemini25Flash": "", "gemini15Pro": "" },
+      "anthropic": { "sonnet46": "", "opus47": "", "haiku35": "" },
+      "aliyun": {
+        "qwen3VlPlus": "通义千问 3 VL Plus（推荐）",
+        "vlMax": "通义千问 VL Max",
+        "vl72b": "Qwen2.5-VL 72B"
+      },
+      "doubao": {
+        "seed16Vision": "豆包 Seed 1.6 Vision（推荐）",
+        "visionPro15": "豆包 1.5 Vision Pro",
+        "visionLite15": "豆包 1.5 Vision Lite"
+      },
+      "zhipu": {
+        "glm45v": "GLM-4.5V（推荐）",
+        "glm4vPlus": "GLM-4V Plus",
+        "glm4vFlash": "GLM-4V Flash"
+      },
+      "moonshot": {
+        "v32kVision": "Kimi V1 32K Vision",
+        "v8kVision": "Kimi V1 8K Vision"
+      },
+      "deepseek": {
+        "v4Flash": "DeepSeek V4 Flash（推荐）",
+        "v4Pro": "DeepSeek V4 Pro"
+      }
+    }
   },
   "promptTemplate": {
     "commonTemplates": "常用模板",
