@@ -1,0 +1,39 @@
+# VDS_DOMAIN — public hostname (e.g. vds.example.com). Leave empty for local HTTP on :80.
+# ACME_EMAIL — optional; Let's Encrypt expiry notices when VDS_DOMAIN is set.
+# Certificates persist in the caddy-data volume (/data).
+
+{
+	email {$ACME_EMAIL}
+}
+
+{$VDS_DOMAIN::80} {
+	root * /srv
+	encode gzip zstd
+
+	request_body {
+		max_size 500MB
+	}
+
+	handle /api/* {
+		reverse_proxy backend:8080 {
+			flush_interval -1
+			transport http {
+				read_timeout 600s
+				write_timeout 600s
+			}
+		}
+	}
+
+	handle /ws/* {
+		reverse_proxy backend:8080 {
+			transport http {
+				read_timeout 3600s
+			}
+		}
+	}
+
+	handle {
+		try_files {path} /index.html
+		file_server
+	}
+}

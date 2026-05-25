@@ -78,7 +78,7 @@ Default install location:
 - macOS / Linux: `~/video-driven-skill`
 - Windows: `%USERPROFILE%\video-driven-skill`
 
-Open `http://localhost:3000` after the script finishes.
+Open `http://localhost` after the script finishes (Docker uses standard ports 80 / 443).
 
 To use AI generation, set your API key in the generated `.env` file:
 
@@ -88,7 +88,7 @@ AI_BASE_URL=your-base-url
 AI_MODEL=your-model
 ```
 
-Common install options: `--tag v1.0.0`, `--port 3000`, `--dir <path>`, `--no-open`.
+Common install options: `--tag v1.0.0`, `--dir <path>`, `--no-open`. Local dev with `npm run dev` uses port 3000.
 
 ### Option 2: Build from source
 
@@ -121,6 +121,41 @@ AI_MODEL=your-model
 ```
 
 For faster base-image pulls in China, add `--cn`. To skip opening the browser, add `--no-open`.
+
+### Public HTTPS (Let's Encrypt)
+
+The frontend runs **Caddy** as a reverse proxy. Set a public hostname in `.env` and Caddy will obtain and renew **Let's Encrypt** certificates automatically. With no domain configured, the stack serves **HTTP only** at `http://localhost`.
+
+**Prerequisites**
+
+1. A server with a public IP and Docker installed.
+2. An **A record** for your hostname (e.g. `vds.example.com`) pointing to that IP.
+3. Firewall / security group allowing **80** and **443** (TCP; optional **443/UDP** for HTTP/3).
+
+**Configuration** (see `.env.example`):
+
+```env
+VDS_DOMAIN=vds.example.com
+ACME_EMAIL=you@example.com
+```
+
+- `VDS_DOMAIN`: hostname only (no `https://` or path).
+- `ACME_EMAIL`: optional, for Let's Encrypt expiry notices.
+
+**Start**
+
+```bash
+docker compose up -d --build
+```
+
+On first start with `VDS_DOMAIN` set, allow time for ACME validation (often 30s–few minutes), then open `https://vds.example.com`. HTTP redirects to HTTPS.
+
+Certificates persist in Docker volumes `caddy-data` and `caddy-config`.
+
+**Troubleshooting**
+
+- Certificate not issued: verify DNS (`dig vds.example.com`) and that ports 80/443 are reachable from the internet.
+- Logs: `docker compose logs -f frontend`
 
 ---
 

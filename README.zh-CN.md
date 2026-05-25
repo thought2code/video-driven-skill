@@ -78,7 +78,7 @@ irm https://raw.githubusercontent.com/thought2code/video-driven-skill/main/scrip
 - macOS / Linux：`~/video-driven-skill`
 - Windows：`%USERPROFILE%\video-driven-skill`
 
-脚本执行完成后访问 `http://localhost:3000`。
+脚本执行完成后访问 `http://localhost`（Docker 使用标准端口 80 / 443）。
 
 使用 AI 生成功能前，请在生成的 `.env` 中填写：
 
@@ -88,7 +88,7 @@ AI_BASE_URL=你的接口地址
 AI_MODEL=你的模型名
 ```
 
-常用安装参数：`--tag v1.0.0`、`--port 3000`、`--dir <路径>`、`--no-open`。
+常用安装参数：`--tag v1.0.0`、`--dir <路径>`、`--no-open`。本地 `npm run dev` 仍使用 3000 端口。
 
 ### 方式二：从源码构建
 
@@ -122,6 +122,43 @@ AI_MODEL=你的模型名
 
 在中国大陆加速基础镜像拉取，可添加 `--cn`。如不想自动打开浏览器，可添加 `--no-open`。
 
+### 公网 HTTPS 部署（Let's Encrypt）
+
+前端使用 **Caddy** 反向代理。配置公网域名后，会自动申请并续期 **Let's Encrypt** 证书；未配置域名时仅在本机 `http://localhost` 提供 HTTP 服务。
+
+**前置条件**
+
+1. 一台有公网 IP 的服务器，已安装 Docker。
+2. 域名（如 `vds.example.com`）的 **A 记录** 指向该服务器公网 IP。
+3. 防火墙 / 安全组放行 **80**、**443**（含 TCP；可选放行 443/UDP 以支持 HTTP/3）。
+
+**配置**
+
+在 `.env` 中设置（可参考 `.env.example`）：
+
+```env
+VDS_DOMAIN=vds.example.com
+ACME_EMAIL=you@example.com
+```
+
+- `VDS_DOMAIN`：仅填主机名，不要带 `https://` 或路径。
+- `ACME_EMAIL`：可选，用于 Let's Encrypt 证书到期提醒。
+
+**启动**
+
+```bash
+docker compose up -d --build
+```
+
+首次启动若已设置 `VDS_DOMAIN`，Caddy 会完成 ACME 校验并签发证书（通常需数十秒到数分钟）。之后通过 `https://vds.example.com` 访问；HTTP 会自动跳转到 HTTPS。
+
+证书与 Caddy 状态保存在 Docker 卷 `caddy-data`、`caddy-config` 中，重建容器不会重复申请（在卷未删除的前提下）。
+
+**排查**
+
+- 证书一直未签发：确认 DNS 已生效（`dig vds.example.com`）、80/443 可从公网访问。
+- 查看日志：`docker compose logs -f frontend`
+
 ---
 
 ## 典型工作流
@@ -152,6 +189,7 @@ video-driven-skill/
 ├── scripts/
 │   ├── install.sh / install.ps1     # 从 GHCR 安装（免克隆）
 │   ├── run-in-docker.cmd / .sh      # 从源码构建并启动
+│   ├── resolve-ui-url.sh / .ps1     # 根据 .env 解析 Web UI 地址
 │   └── kill-midscene.sh         # 可选清理辅助脚本
 ```
 

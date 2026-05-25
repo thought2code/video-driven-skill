@@ -12,4 +12,4 @@ services:
     build:
       args:
         NODE_IMAGE: docker.m.daocloud.io/library/node:20-alpine
-        NGINX_IMAGE: docker.m.daocloud.io/library/nginx:1.27-alpine
+        CADDY_IMAGE: docker.m.daocloud.io/library/caddy:2-alpine
