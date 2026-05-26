@@ -1,12 +1,7 @@
-# VDS_DOMAIN — public hostname (e.g. vds.example.com). Leave empty for local HTTP on :80.
-# ACME_EMAIL — optional; Let's Encrypt expiry notices when VDS_DOMAIN is set.
-# Certificates persist in the caddy-data volume (/data).
+# Generated at container start from VDS_DOMAIN (see docker-entrypoint.sh).
+# @SITE@ is :80 for local HTTP, or your public hostname for automatic HTTPS.
 
-{
-	email {$ACME_EMAIL}
-}
-
-{$VDS_DOMAIN::80} {
+@SITE@ {
 	root * /srv
 	encode gzip zstd
 

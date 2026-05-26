@@ -50,10 +50,10 @@ done
 
 if [[ "$ready" -ne 1 ]]; then
   echo "Timed out waiting for the UI at ${URL}." >&2
+  docker compose ps >&2 || true
+  docker compose logs frontend --tail 15 >&2 || true
   if [[ "$URL" == https://* ]]; then
-    echo "For HTTPS: confirm VDS_DOMAIN DNS, ports 80/443 open, and: docker compose logs -f frontend" >&2
-  else
-    echo "Check: docker compose logs -f" >&2
+    echo "For HTTPS: confirm VDS_DOMAIN DNS and ports 80/443 open." >&2
   fi
   exit 1
 fi

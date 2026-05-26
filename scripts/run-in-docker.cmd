@@ -40,7 +40,7 @@ echo Waiting for %URL% ...
 
 set /a ATTEMPTS=90
 :waitLoop
-curl -fsS -o nul -m 3 "%URL%" 2>nul
+curl.exe -fsS -o nul -m 3 "%URL%" 2>nul
 if not errorlevel 1 goto ready
 set /a ATTEMPTS-=1
 if %ATTEMPTS% LEQ 0 goto timeout
@@ -53,5 +53,7 @@ if "%NO_OPEN%"=="0" start "" "%URL%"
 exit /b 0
 
 :timeout
-echo Timed out waiting for the UI. Check: docker compose logs -f >&2
+echo Timed out waiting for the UI at %URL%. >&2
+docker compose ps >&2
+docker compose logs frontend --tail 15 >&2
 exit /b 1
