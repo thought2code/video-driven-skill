@@ -1,7 +1,7 @@
 const optionBase =
   'px-2.5 py-1 rounded-full cursor-pointer transition-all duration-300 ease-out'
 
-export function segmentedOptionClass(active) {
+function segmentedOptionClass(active) {
   return active
     ? `${optionBase} bg-ink-900 text-paper-50 shadow-soft hover:bg-ink-800 hover:shadow-md`
     : `${optionBase} text-ink-500 hover:text-ink-900 hover:bg-paper-50/90 hover:shadow-sm`

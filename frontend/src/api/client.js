@@ -43,9 +43,6 @@ export const updateSkillFile = (skillId, path, content) =>
 export const getVideoStreamUrl = (videoId) =>
   `/api/videos/${videoId}/stream`
 
-export const getSkillExportUrl = (skillId) =>
-  `/api/skills/${skillId}/export`
-
 export const fetchSkillList = () =>
   client.get('/skills')
 
@@ -72,9 +69,6 @@ export const fetchAndroidDevices = () =>
 
 export const fetchIosDevices = () =>
   client.get('/devices/ios')
-
-export const fetchAllDevices = () =>
-  client.get('/devices')
 
 // ==================== 归档 API ====================
 
@@ -105,17 +99,11 @@ export const deleteFrameArchive = (id) =>
 export const saveRequirement = (content, frameIds, platform) =>
   client.post('/archives/requirements', { content, frameIds, platform })
 
-export const fetchRequirementHistory = () =>
-  client.get('/archives/requirements')
-
 export const fetchRecentRequirements = () =>
   client.get('/archives/requirements/recent')
 
 export const updateRequirementUseCount = (id) =>
   client.put(`/archives/requirements/${id}/use`)
-
-export const deleteRequirement = (id) =>
-  client.delete(`/archives/requirements/${id}`)
 
 // ==================== Prompt 模板 API ====================
 
@@ -124,9 +112,6 @@ export const fetchPromptTemplates = () =>
 
 export const createPromptTemplate = (data) =>
   client.post('/prompt-templates', data)
-
-export const updatePromptTemplate = (id, data) =>
-  client.put(`/prompt-templates/${id}`, data)
 
 export const deletePromptTemplate = (id) =>
   client.delete(`/prompt-templates/${id}`)
@@ -177,9 +162,6 @@ export const discardCandidate = (skillId) =>
 
 export const fetchSkillVersions = (skillId) =>
   client.get(`/skills/${skillId}/versions`)
-
-export const restoreSkillVersion = (skillId, versionNumber) =>
-  client.post(`/skills/${skillId}/versions/${versionNumber}/restore`)
 
 // ==================== 进程管理 API ====================
 

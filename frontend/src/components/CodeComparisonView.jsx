@@ -20,8 +20,6 @@ export default function CodeComparisonView({ onClose }) {
     setRegenerationCandidate,
     acceptCandidate: acceptCandidateAction,
     discardCandidate: discardCandidateAction,
-    setShowComparison,
-    closeRegenerationPanel,
   } = store
 
   const [activeFile, setActiveFile] = useState('scripts/main.js')
@@ -31,7 +29,7 @@ export default function CodeComparisonView({ onClose }) {
   const [isDiscarding, setIsDiscarding] = useState(false)
   const [regenError, setRegenError] = useState(null)
 
-  const { candidate, history, iteration, additionalPrompt, isRegenerating } = regeneration
+  const { candidate, iteration, additionalPrompt, isRegenerating } = regeneration
 
   // 加载历史版本
   useEffect(() => {
@@ -127,7 +125,6 @@ export default function CodeComparisonView({ onClose }) {
       await acceptCandidate(skillId)
       acceptCandidateAction()
       if (onClose) onClose()
-      else closeRegenerationPanel()
     } catch (e) {
       alert(t('regenerate.acceptFailed', { message: e.message }))
     } finally {
@@ -157,12 +154,14 @@ export default function CodeComparisonView({ onClose }) {
       <div className="bg-slate-800/50 rounded-xl p-4 space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-slate-400 text-xs uppercase tracking-wider">🔄 {t('regenerate.regenerate')}</h3>
-          <button
-            onClick={closeRegenerationPanel}
-            className="text-slate-500 hover:text-slate-300"
-          >
-            ✕
-          </button>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="text-slate-500 hover:text-slate-300"
+            >
+              ✕
+            </button>
+          )}
         </div>
 
         {/* 原始诉求 */}
@@ -239,12 +238,14 @@ export default function CodeComparisonView({ onClose }) {
 
         {/* 操作按钮 */}
         <div className="flex gap-2">
-          <button
-            onClick={closeRegenerationPanel}
-            className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm rounded-lg"
-          >
-            {t('common.cancel')}
-          </button>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm rounded-lg"
+            >
+              {t('common.cancel')}
+            </button>
+          )}
           <button
             onClick={handleRegenerate}
             disabled={isRegenerating || !additionalPrompt.trim()}
@@ -300,7 +301,8 @@ export default function CodeComparisonView({ onClose }) {
           </button>
           
           <button
-            onClick={() => setShowComparison(false)}
+            onClick={handleDiscard}
+            disabled={isDiscarding}
             className="text-slate-500 hover:text-slate-300"
           >
             ✕

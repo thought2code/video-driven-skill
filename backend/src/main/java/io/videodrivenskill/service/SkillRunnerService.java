@@ -10,12 +10,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import lombok.Builder;
@@ -32,15 +32,10 @@ public class SkillRunnerService {
 
   private final SkillService skillService;
   private final KnowledgeService knowledgeService;
-  private final ExecutorService executor = Executors.newCachedThreadPool();
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Value("${app.runner.timeout:180}")
   private int timeoutSeconds;
-
-  // 检测 shell 类型
-  private final String shell = detectShell();
-  private final String shellLoginFlag = shell.contains("zsh") ? "-l" : "-l";
 
   @Data
   @Builder
@@ -69,7 +64,6 @@ public class SkillRunnerService {
     private String targetUrl; // 目标网址（browser）
     private String deviceId; // 设备ID（android/ios）
     private boolean headless; // 无头模式
-    private int maxSteps; // 最大步骤数
     private Map<String, String> variables; // 变量值映射
     private Integer timeoutSeconds; // 本次任务超时（秒），null 走全局默认
   }
@@ -144,10 +138,12 @@ public class SkillRunnerService {
       // 设置 PUPPETEER_SKIP_DOWNLOAD 跳过浏览器下载，使用系统已安装的 Chrome
       // 使用 --legacy-peer-deps 避免一些兼容性问题
       // 使用 --prefer-offline 优先使用本地缓存
+      Map<String, String> npmEnv = Map.of("PUPPETEER_SKIP_DOWNLOAD", "true");
       int npmExit =
-          runShellCommand(
+          runProcess(
+              npmCommand("install", "--legacy-peer-deps", "--prefer-offline", "--progress=false"),
               tempDir,
-              "PUPPETEER_SKIP_DOWNLOAD=true npm install --legacy-peer-deps --prefer-offline --progress=false",
+              npmEnv,
               line -> {
                 // npm 输出过滤，显示进度和关键信息
                 String lower = line.toLowerCase();
@@ -202,7 +198,7 @@ public class SkillRunnerService {
     List<DeviceInfo> devices = new ArrayList<>();
 
     try {
-      String output = runShellCommandForOutput("adb devices -l", 10);
+      String output = runProcessForOutput(List.of("adb", "devices", "-l"), null, 10);
       log.debug("adb devices output: {}", output);
 
       // 解析输出：
@@ -246,7 +242,7 @@ public class SkillRunnerService {
 
     try {
       // 先尝试 idevice_id（libimobiledevice）
-      String output = runShellCommandForOutput("idevice_id -l", 10);
+      String output = runProcessForOutput(List.of("idevice_id", "-l"), null, 10);
 
       String[] lines = output.split("\n");
       for (String line : lines) {
@@ -257,7 +253,7 @@ public class SkillRunnerService {
         // 获取设备名称
         String name = "iOS Device";
         try {
-          name = runShellCommandForOutput("idevicename -u " + udid, 5).trim();
+          name = runProcessForOutput(List.of("idevicename", "-u", udid), null, 5).trim();
         } catch (Exception ignored) {
         }
 
@@ -447,32 +443,35 @@ public class SkillRunnerService {
     return fixed;
   }
 
-  /** 使用登录 Shell 执行命令，继承用户环境 使用独立线程实时读取输出，避免阻塞 */
-  private int runShellCommand(
-      Path workingDir, String command, Consumer<String> logConsumer, int timeout)
+  /** 直接启动进程（跨平台，不依赖 bash） */
+  private int runProcess(
+      List<String> command,
+      Path workingDir,
+      Map<String, String> extraEnv,
+      Consumer<String> logConsumer,
+      int timeout)
       throws IOException, InterruptedException {
 
-    List<String> cmdList = new ArrayList<>();
-    cmdList.add(shell);
-    cmdList.add(shellLoginFlag);
-    cmdList.add("-c");
-    cmdList.add(command);
-
-    ProcessBuilder pb = new ProcessBuilder(cmdList);
-    pb.directory(workingDir != null ? workingDir.toFile() : null);
+    ProcessBuilder pb = new ProcessBuilder(command);
+    if (workingDir != null) {
+      pb.directory(workingDir.toFile());
+    }
     pb.redirectErrorStream(true);
-
-    // 继承环境变量
     Map<String, String> env = pb.environment();
     env.putAll(System.getenv());
+    if (extraEnv != null) {
+      env.putAll(extraEnv);
+    }
 
-    log.info("[SkillRunner] Executing: {}", command);
-    logConsumer.accept(
-        "[系统] 执行命令: " + command.substring(0, Math.min(command.length(), 100)) + "...");
+    String cmdLine = String.join(" ", command);
+    log.info("[SkillRunner] Executing: {}", cmdLine);
+    if (logConsumer != null) {
+      logConsumer.accept(
+          "[系统] 执行命令: " + cmdLine.substring(0, Math.min(cmdLine.length(), 100)) + "...");
+    }
 
     Process process = pb.start();
 
-    // 使用独立线程实时读取输出（关键：不能阻塞主线程）
     Thread outputThread =
         new Thread(
             () -> {
@@ -498,9 +497,8 @@ public class SkillRunnerService {
 
     boolean finished = process.waitFor(timeout, TimeUnit.SECONDS);
 
-    // 等待输出线程完成
     try {
-      outputThread.join(5000); // 最多等待5秒
+      outputThread.join(5000);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
@@ -512,25 +510,20 @@ public class SkillRunnerService {
 
     int exitCode = process.exitValue();
     log.info("[SkillRunner] Command completed with exit code: {}", exitCode);
-
     return exitCode;
   }
 
-  /** 执行命令并返回输出（不流式） */
-  private String runShellCommandForOutput(String command, int timeout)
+  /** 直接启动进程并返回输出（不流式） */
+  private String runProcessForOutput(List<String> command, Path workingDir, int timeout)
       throws IOException, InterruptedException {
-    List<String> cmdList = new ArrayList<>();
-    cmdList.add(shell);
-    cmdList.add(shellLoginFlag);
-    cmdList.add("-c");
-    cmdList.add(command);
-
-    ProcessBuilder pb = new ProcessBuilder(cmdList);
+    ProcessBuilder pb = new ProcessBuilder(command);
+    if (workingDir != null) {
+      pb.directory(workingDir.toFile());
+    }
     pb.environment().putAll(System.getenv());
     pb.redirectErrorStream(true);
 
     Process process = pb.start();
-
     String output = new String(process.getInputStream().readAllBytes());
 
     boolean finished = process.waitFor(timeout, TimeUnit.SECONDS);
@@ -764,7 +757,6 @@ public class SkillRunnerService {
         + "const _skillFs = global.fs || require('fs');\n"
         + "const _skillPath = global.path || require('path');\n"
         + "let _stepCount = 0;\n"
-        + "let _lastAgent = null;\n"
         + "const _screenshotDir = process.cwd();\n"
         + "\n"
         + buildKnowledgeLoaderCode()
@@ -790,7 +782,6 @@ public class SkillRunnerService {
         + "}\n"
         + "\n"
         + "function _wrapAgent(agent) {\n"
-        + "    _lastAgent = agent;\n"
         + "    try {\n"
         + "        const kb = globalThis.__KNOWLEDGE__;\n"
         + "        if (kb && kb.context) {\n"
@@ -870,36 +861,30 @@ public class SkillRunnerService {
   private RunResult executeScript(Path tempDir, RunOptions options, Consumer<String> logConsumer) {
     List<String> logs = new ArrayList<>();
 
-    // 构建命令
-    StringBuilder command = new StringBuilder();
-    command.append("cd ").append(tempDir).append(" && ");
-
-    // 环境变量
-    command.append("NODE_ENV=test ");
-    command.append("HEADLESS=").append(options.isHeadless()).append(" ");
+    Map<String, String> env = new HashMap<>();
+    env.put("NODE_ENV", "test");
+    env.put("HEADLESS", String.valueOf(options.isHeadless()));
 
     if (options.getTargetUrl() != null) {
-      command.append("TARGET_URL=").append(escapeShellArg(options.getTargetUrl())).append(" ");
+      env.put("TARGET_URL", options.getTargetUrl());
     }
 
     if (options.getDeviceId() != null) {
-      command.append("DEVICE_ID=").append(escapeShellArg(options.getDeviceId())).append(" ");
+      env.put("DEVICE_ID", options.getDeviceId());
     }
 
-    // 添加自定义变量作为环境变量
-    if (options.getVariables() != null && !options.getVariables().isEmpty()) {
+    if (options.getVariables() != null) {
       options
           .getVariables()
           .forEach(
               (key, value) -> {
                 if (key != null && value != null) {
-                  command.append(key).append("=").append(escapeShellArg(value)).append(" ");
+                  env.put(key, value);
                 }
               });
     }
 
-    // 使用 node 直接执行，并添加调试输出
-    command.append("node scripts/main.js 2>&1");
+    List<String> command = List.of("node", "scripts/main.js");
 
     int effectiveTimeout =
         (options.getTimeoutSeconds() != null && options.getTimeoutSeconds() > 0)
@@ -913,9 +898,10 @@ public class SkillRunnerService {
 
     try {
       int exitCode =
-          runShellCommand(
-              null,
-              command.toString(),
+          runProcess(
+              command,
+              tempDir,
+              env,
               line -> {
                 logs.add(line);
                 parseAndForwardLog(line, logConsumer);
@@ -1114,16 +1100,21 @@ public class SkillRunnerService {
     return null;
   }
 
-  private String escapeShellArg(String arg) {
-    return "'" + arg.replace("'", "'\"'\"'") + "'";
+  private static boolean isWindows() {
+    String os = System.getProperty("os.name", "");
+    return os.toLowerCase().contains("win");
   }
 
-  private String detectShell() {
-    String shell = System.getenv("SHELL");
-    if (shell != null && !shell.isEmpty()) {
-      return shell;
+  private List<String> npmCommand(String... args) {
+    List<String> cmd = new ArrayList<>();
+    if (isWindows()) {
+      cmd.add("cmd.exe");
+      cmd.add("/c");
+      cmd.add("npm");
+    } else {
+      cmd.add("npm");
     }
-    // 默认使用 zsh (macOS) 或 bash (Linux)
-    return Files.exists(Paths.get("/bin/zsh")) ? "/bin/zsh" : "/bin/bash";
+    cmd.addAll(Arrays.asList(args));
+    return cmd;
   }
 }

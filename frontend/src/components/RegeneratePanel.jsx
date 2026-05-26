@@ -4,7 +4,6 @@ import useAppStore from '../store/useAppStore.js'
 import { getRegenerateTemplates } from '../i18n/helpers.js'
 import { regenerateSkill, acceptCandidate, discardCandidate, fetchSkillVersions } from '../api/client.js'
 import FrameGridSelector from './FrameGridSelector.jsx'
-import CodeComparisonView from './CodeComparisonView.jsx'
 import { 
   Sparkles, X, Loader2, Lightbulb, Maximize2, Minimize2, 
   History, Check, Trash2, ChevronDown, Send, FileCode
@@ -28,7 +27,6 @@ export default function RegeneratePanel({ onClose, associatedFrames = null }) {
     setRegenerationCandidate,
     acceptCandidate: acceptCandidateAction,
     discardCandidate: discardCandidateAction,
-    setShowComparison,
   } = store
 
   // 使用关联的帧或当前会话的帧
@@ -44,7 +42,7 @@ export default function RegeneratePanel({ onClose, associatedFrames = null }) {
   const [logs, setLogs] = useState([])
   const [selectedFrameIds, setSelectedFrameIds] = useState([])
   
-  const { candidate, history, iteration, additionalPrompt, isRegenerating } = regeneration
+  const { candidate, iteration, additionalPrompt, isRegenerating } = regeneration
   const logsContainerRef = useRef(null)
 
   // 默认选中所有帧

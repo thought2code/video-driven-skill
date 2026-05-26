@@ -23,7 +23,7 @@ const CUSTOM = {
 /** @typedef {{ id: string, nameKey: string, hintKey?: string, keyUrl?: string, baseUrl: string, models: VisionModel[], isCustom?: boolean }} AiProvider */
 
 /** @type {AiProvider[]} */
-export const AI_PROVIDERS_EN = [
+const AI_PROVIDERS_EN = [
   CUSTOM,
   SERVER,
   {
@@ -69,7 +69,7 @@ const LEGACY_PROVIDER_ALIASES = {
 }
 
 /** @type {AiProvider[]} */
-export const AI_PROVIDERS_ZH = [
+const AI_PROVIDERS_ZH = [
   CUSTOM,
   SERVER,
   {

@@ -807,14 +807,7 @@ public class SkillService {
               logger);
     } else {
       // 纯文本模式
-      List<AIService.SkillContextFrame> contextFrames = new ArrayList<>();
-      if (frames != null) {
-        for (GenerateSkillRequest.AnnotatedFrame frame : frames) {
-          contextFrames.add(
-              new AIService.SkillContextFrame(
-                  frame.getTimestamp(), frame.getDescription(), frame.getAnnotationJson()));
-        }
-      }
+      List<AIService.SkillContextFrame> contextFrames = toContextFrames(frames);
 
       logger.accept("🔄 开始重新生成 Skill，第 " + (record.getRegenerationCount() + 1) + " 次迭代");
       logger.accept("📡 使用纯文本模式");
@@ -981,14 +974,7 @@ public class SkillService {
               logger);
     } else {
       // 纯文本模式：只发送文本描述
-      List<AIService.SkillContextFrame> contextFrames = new ArrayList<>();
-      if (selectedFrames != null) {
-        for (GenerateSkillRequest.AnnotatedFrame frame : selectedFrames) {
-          contextFrames.add(
-              new AIService.SkillContextFrame(
-                  frame.getTimestamp(), frame.getDescription(), frame.getAnnotationJson()));
-        }
-      }
+      List<AIService.SkillContextFrame> contextFrames = toContextFrames(selectedFrames);
 
       aiResult =
           aiService.generatePartialTextOnly(
@@ -1593,5 +1579,19 @@ public class SkillService {
       log.warn("Failed to extract current code from record: {}", record.getSkillId(), e);
       return "";
     }
+  }
+
+  private List<AIService.SkillContextFrame> toContextFrames(
+      List<GenerateSkillRequest.AnnotatedFrame> frames) {
+    List<AIService.SkillContextFrame> contextFrames = new ArrayList<>();
+    if (frames == null) {
+      return contextFrames;
+    }
+    for (GenerateSkillRequest.AnnotatedFrame frame : frames) {
+      contextFrames.add(
+          new AIService.SkillContextFrame(
+              frame.getTimestamp(), frame.getDescription(), frame.getAnnotationJson()));
+    }
+    return contextFrames;
   }
 }

@@ -167,10 +167,7 @@ export default function PartialRegeneratePanel({ onClose, associatedFrames = nul
         regeneration: {
           ...useAppStore.getState().regeneration,
           candidate: response.candidate,
-          current: response.current,
-          history: response.history,
           iteration: response.iteration,
-          showComparison: true,
           isRegenerating: false
         }
       })

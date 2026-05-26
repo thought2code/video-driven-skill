@@ -92,7 +92,6 @@ public class SkillRunWebSocketHandler extends TextWebSocketHandler {
             .targetUrl(targetUrl)
             .deviceId(deviceId)
             .headless(headless)
-            .maxSteps(20)
             .variables(variables)
             .timeoutSeconds(timeoutSeconds)
             .build();

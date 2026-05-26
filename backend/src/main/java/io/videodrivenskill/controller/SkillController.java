@@ -8,8 +8,6 @@ import java.io.BufferedReader;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -35,7 +33,6 @@ public class SkillController {
 
   private final SkillService skillService;
   private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
-  private final ExecutorService executor = Executors.newCachedThreadPool();
 
   @GetMapping
   public ResponseEntity<List<SkillRecord>> listSkills() {
@@ -449,7 +446,6 @@ public class SkillController {
     public String sessionId;
     public String requirement;
     public String additionalPrompt;
-    public List<String> selectedFrameIds; // 选中的帧ID列表（可选）
     public List<GenerateSkillRequest.AnnotatedFrame> selectedFrames; // 完整的帧数据
     public CodeRange selectedCodeRange; // 选中的代码范围（可选）
     public String mode; // auto | text | multimodal
