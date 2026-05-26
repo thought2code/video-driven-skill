@@ -32,8 +32,13 @@ if (-not (Test-Path $envPath)) {
 
 $env:VD_SKILL_IMAGE_TAG = $Tag
 
-$resolveUrlScript = Join-Path $PSScriptRoot "resolve-ui-url.ps1"
+# Piped via "irm ... | iex" has no $PSScriptRoot; download helper into the install dir.
+$resolveUrlScript = Join-Path $InstallDir "resolve-ui-url.ps1"
+Invoke-WebRequest -Uri "$RawBase/scripts/resolve-ui-url.ps1" -OutFile $resolveUrlScript -UseBasicParsing
 $Url = & $resolveUrlScript -EnvFile $envPath
+if (-not $Url) {
+  Write-Error "Failed to resolve web UI URL from $envPath"
+}
 
 Write-Host "Pulling images from GHCR..."
 docker compose -f docker-compose.release.yml pull
@@ -62,6 +67,6 @@ if (-not $ready) {
 
 Write-Host "Ready: $Url"
 Write-Host "Data volume: video-driven-skill_app-data (docker volume inspect video-driven-skill_app-data)"
-if (-not $NoOpen) {
+if (-not $NoOpen -and $Url) {
   Start-Process $Url
 }

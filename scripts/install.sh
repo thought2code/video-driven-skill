@@ -55,8 +55,14 @@ fi
 
 export VD_SKILL_IMAGE_TAG="$IMAGE_TAG"
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-URL="$("$SCRIPT_DIR/resolve-ui-url.sh" .env)"
+# curl | bash has no stable script path; download helper into the install dir.
+curl -fsSL "${RAW_BASE}/scripts/resolve-ui-url.sh" -o resolve-ui-url.sh
+chmod +x resolve-ui-url.sh
+URL="$(./resolve-ui-url.sh .env)"
+if [[ -z "$URL" ]]; then
+  echo "Failed to resolve web UI URL from .env" >&2
+  exit 1
+fi
 
 echo "Pulling images from GHCR..."
 docker compose -f docker-compose.release.yml pull
