@@ -142,6 +142,9 @@ public class SkillService {
       logger.accept("🔗 关联视频: " + videoId + ", " + request.getFrames().size() + " 帧");
     }
 
+    String filesJson = objectMapper.writeValueAsString(fileEntries);
+    String variablesJson = objectMapper.writeValueAsString(variables);
+
     skillRepository.save(
         SkillRecord.builder()
             .skillId(skillId)
@@ -151,7 +154,8 @@ public class SkillService {
             .videoId(videoId)
             .framesJson(framesJson)
             .requirement(request.getRequirement())
-            .variablesJson(objectMapper.writeValueAsString(variables))
+            .filesJson(filesJson)
+            .variablesJson(variablesJson)
             .createdAt(LocalDateTime.now())
             .build());
 
@@ -295,6 +299,9 @@ public class SkillService {
               .content(objectMapper.writeValueAsString(variables))
               .build());
     }
+    if (recordOpt.isPresent()) {
+      syncRecordFromSkillDirectory(recordOpt.get(), skillPath);
+    }
 
     // 从数据库读取关联的视频ID和帧信息
     String videoId = null;
@@ -327,12 +334,18 @@ public class SkillService {
         .build();
   }
 
+  @Transactional
   public void updateFile(String skillId, String filePath, String content) throws IOException {
     Path skillPath = Paths.get(skillsDir, skillId);
     if (!Files.exists(skillPath)) throw new FileNotFoundException("Skill not found: " + skillId);
-    Path targetFile = skillPath.resolve(filePath);
+    Path targetFile = resolveSkillRelativePath(skillPath, filePath);
     Files.createDirectories(targetFile.getParent());
-    Files.writeString(targetFile, content);
+    Files.writeString(targetFile, content == null ? "" : content);
+
+    Optional<SkillRecord> recordOpt = skillRepository.findById(skillId);
+    if (recordOpt.isPresent()) {
+      syncRecordFromSkillDirectory(recordOpt.get(), skillPath);
+    }
   }
 
   public byte[] exportZip(String skillId) throws IOException {
@@ -611,6 +624,44 @@ public class SkillService {
               .build());
     }
     return entries;
+  }
+
+  private Path resolveSkillRelativePath(Path skillPath, String filePath) {
+    if (filePath == null || filePath.isBlank()) {
+      throw new IllegalArgumentException("file path is required");
+    }
+    Path normalizedSkillPath = skillPath.toAbsolutePath().normalize();
+    Path targetFile = normalizedSkillPath.resolve(filePath).normalize();
+    if (!targetFile.startsWith(normalizedSkillPath) || targetFile.equals(normalizedSkillPath)) {
+      throw new IllegalArgumentException("invalid skill file path: " + filePath);
+    }
+    return targetFile;
+  }
+
+  private void syncRecordFromSkillDirectory(SkillRecord record, Path skillPath) throws IOException {
+    List<SkillFile.FileEntry> fileEntries = collectFileEntries(skillPath);
+    record.setFilesJson(objectMapper.writeValueAsString(fileEntries));
+    record.setSkillName(extractSkillName(skillPath));
+    record.setPlatform(
+        extractMetadata(
+            skillPath,
+            "platform",
+            record.getPlatform() == null || record.getPlatform().isBlank()
+                ? "browser"
+                : record.getPlatform()));
+
+    Path variablesPath = skillPath.resolve("variables.json");
+    if (Files.exists(variablesPath)) {
+      String variablesJson = Files.readString(variablesPath);
+      try {
+        objectMapper.readValue(
+            variablesJson, new TypeReference<List<SkillFile.SkillVariable>>() {});
+        record.setVariablesJson(variablesJson);
+      } catch (Exception e) {
+        log.warn("Skipping invalid variables.json for skill: {}", record.getSkillId(), e);
+      }
+    }
+    skillRepository.save(record);
   }
 
   public void deleteSkill(String skillId) throws IOException {
@@ -1178,6 +1229,13 @@ public class SkillService {
     // 1. 解析候选代码
     SkillFile candidate = objectMapper.readValue(record.getCandidateJson(), SkillFile.class);
 
+    if (record.getFilesJson() == null || record.getFilesJson().isEmpty()) {
+      Path skillPath = Paths.get(skillsDir, skillId);
+      if (Files.exists(skillPath)) {
+        syncRecordFromSkillDirectory(record, skillPath);
+      }
+    }
+
     // 2. 保存当前版本到历史（如果存在）
     if (record.getFilesJson() != null && !record.getFilesJson().isEmpty()) {
       int versionNumber = (record.getCurrentVersion() == null ? 1 : record.getCurrentVersion());
@@ -1468,8 +1526,14 @@ public class SkillService {
 
   private SkillFile buildSkillFileFromRecord(SkillRecord record) throws IOException {
     if (record.getFilesJson() == null || record.getFilesJson().isEmpty()) {
-      // 从文件系统读取
-      return getSkill(record.getSkillId());
+      Path skillPath = Paths.get(skillsDir, record.getSkillId());
+      if (Files.exists(skillPath)) {
+        syncRecordFromSkillDirectory(record, skillPath);
+      }
+      if (record.getFilesJson() == null || record.getFilesJson().isEmpty()) {
+        // 从文件系统读取
+        return getSkill(record.getSkillId());
+      }
     }
 
     List<SkillFile.FileEntry> files =
@@ -1535,7 +1599,7 @@ public class SkillService {
 
     // 写入新文件
     for (SkillFile.FileEntry file : skillFile.getFiles()) {
-      Path filePath = skillPath.resolve(file.getPath());
+      Path filePath = resolveSkillRelativePath(skillPath, file.getPath());
       Files.createDirectories(filePath.getParent());
       Files.writeString(filePath, file.getContent());
     }
@@ -1551,7 +1615,25 @@ public class SkillService {
   /** 从 SkillRecord 中提取当前的 main.js 代码 */
   private String extractCurrentMainJs(SkillRecord record) {
     if (record.getFilesJson() == null || record.getFilesJson().isEmpty()) {
-      return "";
+      Path skillPath = Paths.get(skillsDir, record.getSkillId());
+      if (Files.exists(skillPath)) {
+        try {
+          syncRecordFromSkillDirectory(record, skillPath);
+        } catch (IOException e) {
+          log.warn("Failed to sync skill files before extracting code: {}", record.getSkillId(), e);
+        }
+      }
+      if (record.getFilesJson() == null || record.getFilesJson().isEmpty()) {
+        Path mainJs = skillPath.resolve("scripts").resolve("main.js");
+        if (Files.exists(mainJs)) {
+          try {
+            return Files.readString(mainJs);
+          } catch (IOException e) {
+            log.warn("Failed to read main.js from disk for skill: {}", record.getSkillId(), e);
+          }
+        }
+        return "";
+      }
     }
     try {
       List<SkillFile.FileEntry> files =
